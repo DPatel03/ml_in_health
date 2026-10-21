@@ -1,0 +1,7 @@
+transition,disease_area,n,our_rate,bio_rate,bio_n,gap_pct_points
+phase1_to_phase2,Non-oncology,632,0.704,0.539,2786,16.5
+phase1_to_phase2,Oncology,824,0.496,0.488,1628,0.8
+phase2_to_phase3,Non-oncology,4391,0.264,0.312,3201,-4.8
+phase2_to_phase3,Oncology,4047,0.288,0.246,1732,4.2
+phase3_to_approval,Non-oncology,664,0.41,0.553,1433,-14.3
+phase3_to_approval,Oncology,278,0.439,0.439,495,0.0

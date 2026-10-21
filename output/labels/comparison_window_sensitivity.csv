@@ -1,0 +1,10 @@
+transition,n,our_rate,window_years
+phase1_to_phase2,1770,0.412,3
+phase2_to_phase3,9553,0.174,3
+phase3_to_approval,1156,0.311,3
+phase1_to_phase2,1696,0.566,5
+phase2_to_phase3,8438,0.276,5
+phase3_to_approval,963,0.411,5
+phase1_to_phase2,1517,0.637,7
+phase2_to_phase3,7132,0.351,7
+phase3_to_approval,779,0.449,7

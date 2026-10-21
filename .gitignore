@@ -1,0 +1,31 @@
+# Raw and downloaded data: too large for git or not ours to redistribute.
+# See "Data" in README.md for where each file comes from and where to put it.
+aact_export.zip/
+clean_trial_dataset.csv
+clean_trial_dataset.xlsx
+unmatched_drug_names.csv
+unmatched_drug_names.xlsx
+external/drugsatfda/
+external/chembl/
+external/bio/*.pdf
+
+# Large generated outputs: rebuild them with the scripts
+output/labels/transitions.csv
+output/labels/trial_drugs.csv
+
+# Python, editors, OS
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.pylibs/
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store
+
+# Review of the team's first cleaned dataset: kept locally, not part of the project code
+audit/
+check_uploaded_files.py
+tests/test_check_uploaded_files.py

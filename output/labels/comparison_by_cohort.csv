@@ -1,0 +1,10 @@
+transition,cohort,n,our_rate
+phase1_to_phase2,2005-2010,570,0.591
+phase1_to_phase2,2011-2015,536,0.575
+phase1_to_phase2,2016+,590,0.534
+phase2_to_phase3,2005-2010,2494,0.263
+phase2_to_phase3,2011-2015,2239,0.292
+phase2_to_phase3,2016+,3705,0.274
+phase3_to_approval,2005-2010,357,0.378
+phase3_to_approval,2011-2015,314,0.439
+phase3_to_approval,2016+,292,0.421

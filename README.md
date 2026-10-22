@@ -33,7 +33,7 @@ Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
 | `build_labels.py` | Builds the label and compares it with BIO |
 | `label_pipeline/` | Label code: trials, drug names, FDA approvals, disease areas, success/failure, BIO tables |
 | `LABEL_RULES.md` | Label rules and open decisions |
-| `output/labels/` | Comparison tables and `summary.json` |
+| `output/labels/` | Label table (`transitions.csv`), drug IDs per trial (`trial_drugs.csv`), comparison tables and `summary.json` |
 | `external/bio/bio2021_phase_transitions.csv` | BIO 2021 success rates |
 | `tests/` | Tests for the label code |
 

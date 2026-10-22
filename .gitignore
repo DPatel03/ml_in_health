@@ -9,10 +9,6 @@ external/drugsatfda/
 external/chembl/
 external/bio/*.pdf
 
-# Large generated outputs: rebuild them with the scripts
-output/labels/transitions.csv
-output/labels/trial_drugs.csv
-
 # Python, editors, OS
 __pycache__/
 *.py[cod]

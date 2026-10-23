@@ -163,6 +163,30 @@ def test_build_transitions_end_to_end():
     assert got[("phase2_to_phase3", "CHEMBL_B")] == 0.0
     assert not any(d == "CHEMBL_OLD" for _, d in got)
     assert labeled.in_v1_label_set.all()
+    entry = {(r.transition, r.drug_id): r.entry_nct_id for r in labeled.itertuples()}
+    assert entry == {("phase1_to_phase2", "CHEMBL_A"): "T1", ("phase2_to_phase3", "CHEMBL_A"): "T2",
+                     ("phase3_to_approval", "CHEMBL_A"): "T3", ("phase2_to_phase3", "CHEMBL_B"): "T4"}
+
+
+def test_entry_trial_is_per_disease_and_ties_break_to_lowest_nct_id():
+    trials = pd.DataFrame({
+        "nct_id": ["T12", "T10", "T11"],
+        "phase": ["PHASE2", "PHASE2", "PHASE1/PHASE2"],
+        "level": [2, 2, 2],
+        "start": [D("2010-01-01"), D("2010-01-01"), D("2011-01-01")],
+        "has_us_site": [True, True, True],
+    })
+    conditions = pd.DataFrame({"nct_id": ["T12", "T10", "T11"], "mesh_term": ["Psoriasis", "Psoriasis", "Crohn Disease"]})
+    tables = AactTables(trials=trials, interventions=pd.DataFrame(), other_names=pd.Series(dtype=object),
+                        conditions=conditions, ancestors=pd.DataFrame(columns=["nct_id", "mesh_term"]), snapshot=SNAPSHOT)
+    trial_drugs = pd.DataFrame({"nct_id": ["T12", "T10", "T11"], "drug_id": ["CHEMBL_C"] * 3, "drug_name": ["c"] * 3})
+
+    transitions, _ = labels.build_transitions(trial_drugs, tables, pd.Series(dtype="datetime64[ns]"), first_entry_year=2005)
+    p2 = transitions[transitions.transition == "phase2_to_phase3"].set_index("mesh_term")
+
+    assert p2.at["Psoriasis", "entry_nct_id"] == "T10"
+    assert p2.at["Crohn Disease", "entry_nct_id"] == "T11"
+    assert p2.at["Crohn Disease", "entry_date"] == D("2011-01-01")
 
 
 # ---------- disease areas ----------

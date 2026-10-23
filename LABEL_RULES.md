@@ -31,7 +31,8 @@ A name that points at two different drugs is skipped, never guessed.
 
 ## 5. Phases
 - Phase 1/2 counts as reaching Phase 2. Phase 2/3 counts as reaching Phase 3.
-- A program enters a phase on the start date of its first trial in that phase.
+- A program enters a phase on the start date of its first trial in that phase. That trial's ID is in `entry_nct_id`. For Phase 2 → 3 it's the first Phase 2 trial **for that disease**. If two trials start on the same day, the lower NCT ID is used.
+- One trial can list several MeSH terms, so several rows can share the same `entry_nct_id`. They have the same trial features but can have different labels.
 
 ## 6. Success and failure
 | Step | Unit | Success means | Time allowed |

@@ -70,6 +70,11 @@ def _trial_terms(aact: AactTables) -> tuple[dict[str, set[str]], dict[str, set[s
     return listed, anc, ancestors_of
 
 
+def _entry_trial(trials: pd.DataFrame, keys: list[str]) -> pd.Series:
+    """NCT ID of the trial that sets each program's entry date; same-day ties go to the lowest NCT ID."""
+    return trials.sort_values(["start", "nct_id"]).groupby(keys).nct_id.first()
+
+
 def _mode_area(areas: pd.Series) -> str:
     known = areas[areas != "Unknown"]
     return known.mode().iat[0] if len(known) else "Unknown"
@@ -94,16 +99,21 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
     p1 = t[t.phase == "PHASE1"]
     e1 = p1.groupby("drug_id").agg(entry_date=("start", "min"), area=("area", _mode_area),
                                    entry_has_us_site=("has_us_site", "any"))
+    e1["entry_nct_id"] = _entry_trial(p1, ["drug_id"])
     reach2 = t[t.level >= 2].groupby("drug_id").start.min()
     frames.append(e1.assign(transition=TRANSITIONS[0], mesh_term="", next_date=reach2.reindex(e1.index)))
 
     # Phase 2 -> 3, per drug + disease: Phase 3 counts if it shares the MeSH term, or one is the other's ancestor.
     p2 = t[t.phase.isin(PHASE2_ENTRY)]
-    p2_terms = [(d, m, s, us) for d, n, s, us in zip(p2.drug_id, p2.nct_id, p2.start, p2.has_us_site)
-                for m in listed.get(n, ())]
-    e2 = (pd.DataFrame(p2_terms, columns=["drug_id", "mesh_term", "start", "has_us_site"])
-          .groupby(["drug_id", "mesh_term"])
+    p2_terms = pd.DataFrame(
+        [(d, m, n, s, us) for d, n, s, us in zip(p2.drug_id, p2.nct_id, p2.start, p2.has_us_site)
+         for m in listed.get(n, ())],
+        columns=["drug_id", "mesh_term", "nct_id", "start", "has_us_site"])
+    e2 = (p2_terms.groupby(["drug_id", "mesh_term"])
           .agg(entry_date=("start", "min"), entry_has_us_site=("has_us_site", "any")).reset_index())
+    # per disease, so a drug tested in several diseases gets the right Phase 2 trial on each row
+    e2["entry_nct_id"] = (_entry_trial(p2_terms, ["drug_id", "mesh_term"])
+                          .reindex(pd.MultiIndex.from_frame(e2[["drug_id", "mesh_term"]])).to_numpy())
     p3_by_drug: dict[str, list[tuple[pd.Timestamp, set[str], set[str]]]] = defaultdict(list)
     p3 = t[t.level == 3]
     for d, n, s in zip(p3.drug_id, p3.nct_id, p3.start):
@@ -125,6 +135,7 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
     # Phase 3 -> FDA approval, per drug: Drugs@FDA has no indication field.
     p3e = p3.groupby("drug_id").agg(entry_date=("start", "min"), area=("area", _mode_area),
                                     entry_has_us_site=("has_us_site", "any"))
+    p3e["entry_nct_id"] = _entry_trial(p3, ["drug_id"])
     frames.append(p3e.assign(transition=TRANSITIONS[2], mesh_term="", next_date=approval.reindex(p3e.index)))
 
     out = pd.concat(frames).rename_axis("drug_id").reset_index()
@@ -135,8 +146,8 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
     out["in_v1_label_set"] = out.identified & out.entry_has_us_site
     out = out[out.entry_date.dt.year >= first_entry_year]
     stats = {"drugs_in_scope": int(names.size), "drugs_excluded_already_approved": len(lifecycle)}
-    cols = ["transition", "drug_id", "drug_name", "mesh_term", "disease_area", "entry_date", "next_date",
-            "entry_has_us_site", "identified", "in_v1_label_set"]
+    cols = ["transition", "drug_id", "drug_name", "mesh_term", "disease_area", "entry_date", "entry_nct_id",
+            "next_date", "entry_has_us_site", "identified", "in_v1_label_set"]
     return out.rename(columns={"area": "disease_area"})[cols].reset_index(drop=True), stats
 
 

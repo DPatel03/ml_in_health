@@ -60,7 +60,7 @@ python3 build_labels.py     # builds output/labels/ (~30 s)
 python3 -m pytest           # tests (no data needed)
 ```
 
-The label table is `output/labels/transitions.csv`. Use rows where `in_v1_label_set` is True and `label` is 0 or 1.
+The label table is `output/labels/transitions.csv`. Use rows where `in_v1_label_set` is True and `label` is 0 or 1. To add trial features, join on `entry_nct_id`: the trial that started that program's phase (for Phase 2 → 3, the first Phase 2 trial in that disease).
 
 ## Open decisions
 

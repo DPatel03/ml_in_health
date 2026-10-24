@@ -4,8 +4,8 @@ Investors value biotech drugs using fixed success rates from one industry table 
 
 ## Status
 
-- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021.
-- **Next:** features, models (logistic regression, LightGBM), evaluation (Brier score, calibration).
+- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained and beating the BIO benchmark.
+- **Next:** LightGBM, the other two transitions, calibration tuning.
 
 ## Label v1 vs BIO 2021
 
@@ -16,6 +16,26 @@ Investors value biotech drugs using fixed success rates from one industry table 
 | Phase 3 → approval | 41.1% | 52.4% | 963 |
 
 Phase 3 → approval matches BIO for cancer drugs (43.9% vs 43.9%) but is low overall, because vaccines and blood products aren't in Drugs@FDA. More breakdowns are in `output/labels/`.
+
+## Phase 2 → 3 baseline model
+
+`build_features.py` pulls trial-design features from AACT (masking, allocation, enrollment, sponsor,
+site counts) and `build_model.py` joins them onto the label table via `entry_nct_id`, then trains
+logistic regression. Enrollment is kept only where `enrollment_type` is `ESTIMATED` and site/country
+counts are left out entirely, since AACT stores the final values for both, not what was known when
+Phase 2 started. Sponsor track record only looks at that sponsor's earlier programs.
+
+Test set is entries from 2016 on (train is everything before), drugs kept on one side of the split only.
+
+| | Brier score |
+|---|---|
+| Logistic regression | 0.169 |
+| BIO 2021 flat rate (28.9%) | 0.186 |
+| Our own area-level rate, training years only | 0.186 |
+
+The area-only baseline doesn't beat BIO's flat number by itself, so the model's edge is coming from
+the trial-design features, not just the disease area. Calibration (`output/model/calibration_phase2_to_phase3.png`)
+is decent through the middle of the range and overconfident at the high end (predicts ~58%, actual ~45%).
 
 ## How the label works
 
@@ -34,6 +54,9 @@ Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
 | `label_pipeline/` | Label code: trials, drug names, FDA approvals, disease areas, success/failure, BIO tables |
 | `LABEL_RULES.md` | Label rules and open decisions |
 | `output/labels/` | Label table (`transitions.csv`), drug IDs per trial (`trial_drugs.csv`), comparison tables and `summary.json` |
+| `build_features.py` | Trial-design features from AACT |
+| `build_model.py` | Joins features to the labels, trains the baseline model |
+| `output/model/` | Feature table and the Phase 2 → 3 calibration plot |
 | `external/bio/bio2021_phase_transitions.csv` | BIO 2021 success rates |
 | `tests/` | Tests for the label code |
 
@@ -57,6 +80,8 @@ pip install -r requirements.txt
 
 ```bash
 python3 build_labels.py     # builds output/labels/ (~30 s)
+python3 build_features.py   # builds output/model/trial_design_features.csv
+python3 build_model.py      # trains the Phase 2 -> 3 baseline, writes output/model/calibration_phase2_to_phase3.png
 python3 -m pytest           # tests (no data needed)
 ```
 

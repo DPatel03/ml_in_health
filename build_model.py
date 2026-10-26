@@ -32,8 +32,15 @@ BIO_RATE = 0.289  # BIO 2021, phase2_to_phase3, all indications -- LABEL_RULES.m
 
 # num_facilities / num_countries dropped: AACT stores the final site/country list, not what was
 # registered when Phase 2 started, so they'd leak how the trial actually played out (Deep's note).
-NUMERIC = ["log_enrollment", "number_of_arms", "sponsor_track_record", "has_us_site"]
-CATEGORICAL = ["allocation", "intervention_model", "masking", "disease_area"]
+# log_enrollment dropped too: it's only kept where enrollment_type is ESTIMATED, which is ~5% of
+# training rows but ~16% of test rows, and trials still carrying an estimate advance less often
+# (11-14% vs 26-29%). Median-imputing the rest made the few real values extreme outliers, which
+# drove the overconfident top fifth (predicted ~50%, actual ~23%).
+NUMERIC = ["number_of_arms", "sponsor_track_record", "has_us_site"]
+# phase = entry trial's phase. Phase 1/2 trials count as reaching Phase 2 but advance less often
+# (21-24% vs 27-29%), and their share doubles from train (24%) to test (47%).
+CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area"]
+N_BOOT = 2000
 
 
 def make_placeholder_labels(features: pd.DataFrame, n: int = 1200, seed: int = 0) -> pd.DataFrame:
@@ -66,25 +73,58 @@ def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame) ->
     df["log_enrollment"] = np.log1p(df.enrollment)
     df["has_us_site"] = df.has_us_site.astype(float)
 
-    # sponsor track record: that sponsor's label rate on programs entered strictly before this one
-    # (same transition only, for now -- broaden to all three transitions once real data is in)
     df = df.sort_values("entry_date").reset_index(drop=True)
+    df["sponsor_track_record"] = sponsor_track_record(df)
+
+    # strict time split: train on entries up to 2015, test on 2016+, and keep every program of the
+    # same drug on one side (LABEL_RULES.md #8). An older drug's 2016+ programs fit neither side,
+    # so they're dropped rather than letting train see test-period outcomes.
+    year = df.entry_date.dt.year
+    drug_min_year = df.drug_id.map(df.groupby("drug_id").entry_date.min().dt.year)
+    df["split"] = np.select([year <= 2015, drug_min_year >= 2016], ["train", "test"], "dropped")
+    return df[df.split != "dropped"].reset_index(drop=True)
+
+
+def sponsor_track_record(df: pd.DataFrame) -> np.ndarray:
+    """That sponsor's label rate on programs whose outcome was already known before this one entered.
+    A success is known on next_date, a failure only once its window ran out (entry + window_years),
+    so a program entered in 2014 can't inform a 2016 prediction if it failed. Same transition only,
+    for now -- broaden to all three transitions later."""
+    known_date = df.next_date.where(df.label == 1, df.entry_date + pd.to_timedelta(df.window_years * 365.25, unit="D"))
     track_record = np.full(len(df), np.nan)
-    seen: dict[str, list[float]] = {}
-    for i, (sponsor, lbl) in enumerate(zip(df.lead_sponsor_name, df.label)):
-        hist = seen.get(sponsor, [])
-        if hist:
-            track_record[i] = float(np.mean(hist))
-        seen.setdefault(sponsor, []).append(lbl)
-    df["sponsor_track_record"] = track_record
-
-    # keep every program of the same drug on the same side of the split (LABEL_RULES.md #8)
-    drug_min_year = df.groupby("drug_id").entry_date.min().dt.year
-    df["split"] = np.where(df.drug_id.map(drug_min_year) <= 2015, "train", "test")
-    return df
+    for _, idx in df.groupby("lead_sponsor_name").indices.items():
+        order = np.argsort(known_date.iloc[idx].to_numpy())
+        known_sorted = known_date.iloc[idx].to_numpy()[order]
+        cum_labels = np.cumsum(df.label.iloc[idx].to_numpy()[order])
+        # count of the sponsor's outcomes known strictly before each program's entry date
+        n_known = np.searchsorted(known_sorted, df.entry_date.iloc[idx].to_numpy(), side="left")
+        has_hist = n_known > 0
+        track_record[idx[has_hist]] = cum_labels[n_known[has_hist] - 1] / n_known[has_hist]
+    return track_record
 
 
-def fit_and_evaluate(df: pd.DataFrame) -> dict:
+def load_bio_area_rates(path: Path) -> pd.Series:
+    """BIO 2021 Phase 2 -> 3 rate per disease area: the phase x area table analysts actually use."""
+    bio = pd.read_csv(path)
+    return bio[bio.transition == TRANSITION].set_index("disease_area").success_rate
+
+
+def clustered_bootstrap_ci(diff: np.ndarray, groups: np.ndarray, n_boot: int = N_BOOT,
+                           seed: int = 0) -> tuple[float, float]:
+    """95% CI for the mean of a per-row score difference, resampling whole drugs: one drug's
+    programs share most of their information, so resampling rows would make the CI too narrow."""
+    rng = np.random.default_rng(seed)
+    uniq, inverse = np.unique(groups, return_inverse=True)
+    sums = np.bincount(inverse, weights=diff)
+    counts = np.bincount(inverse)
+    means = np.empty(n_boot)
+    for b in range(n_boot):
+        pick = np.bincount(rng.integers(0, len(uniq), len(uniq)), minlength=len(uniq))
+        means[b] = (pick * sums).sum() / (pick * counts).sum()
+    return tuple(np.percentile(means, [2.5, 97.5]))
+
+
+def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) -> dict:
     pre = ColumnTransformer([
         ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
         ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
@@ -103,11 +143,26 @@ def fit_and_evaluate(df: pd.DataFrame) -> dict:
     overall_rate = train.label.mean()
     area_proba = test.disease_area.map(area_rate).fillna(overall_rate).to_numpy()
 
+    benchmarks = {"BIO flat rate": bio_proba, "train-years area rate": area_proba}
+    if bio_area_rates is not None:
+        # areas missing from BIO's table (e.g. Unknown) fall back to BIO's all-indications rate
+        benchmarks["BIO by area"] = test.disease_area.map(bio_area_rates).fillna(BIO_RATE).to_numpy()
+    y = test.label.to_numpy()
+    model_sq_err = (proba - y) ** 2
+    brier_model = model_sq_err.mean()
+    vs = {}
+    for name, bench in benchmarks.items():
+        brier_bench = brier_score_loss(y, bench)
+        lo, hi = clustered_bootstrap_ci(model_sq_err - (bench - y) ** 2, test.drug_id.to_numpy())
+        vs[name] = {"brier": brier_bench, "skill": 1 - brier_model / brier_bench, "diff": brier_model - brier_bench,
+                    "diff_ci": (lo, hi)}
+
     return {
         "n_train": len(train), "n_test": len(test),
-        "brier_model": brier_score_loss(test.label, proba),
+        "brier_model": brier_model,
         "brier_bio": brier_score_loss(test.label, bio_proba),
         "brier_area": brier_score_loss(test.label, area_proba),
+        "vs_benchmarks": vs,
         "log_loss_model": log_loss(test.label, proba, labels=[0, 1]),
         "log_loss_area": log_loss(test.label, area_proba, labels=[0, 1]),
         "calibration_curve": list(zip(mean_pred.round(3), frac_pos.round(3))),
@@ -138,6 +193,7 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--features", type=Path, default=HERE / "output" / "model" / "trial_design_features.csv")
     p.add_argument("--transitions", type=Path, default=HERE / "output" / "labels" / "transitions.csv")
+    p.add_argument("--bio", type=Path, default=HERE / "external" / "bio" / "bio2021_phase_transitions.csv")
     a = p.parse_args()
 
     features = pd.read_csv(a.features, parse_dates=["start"])
@@ -153,12 +209,14 @@ def main() -> None:
     print(f"programs with features + label: {len(df):,} "
           f"(train {len(df[df.split == 'train']):,}, test {len(df[df.split == 'test']):,})")
 
-    results = fit_and_evaluate(df)
+    results = fit_and_evaluate(df, load_bio_area_rates(a.bio))
     print(f"\nn_train={results['n_train']} n_test={results['n_test']} "
           f"test positive rate={results['test_positive_rate']:.3f}")
-    print(f"Brier -- model: {results['brier_model']:.4f}  "
-          f"BIO flat rate ({BIO_RATE}): {results['brier_bio']:.4f}  "
-          f"train-years area rate: {results['brier_area']:.4f}")
+    print(f"Brier -- model: {results['brier_model']:.4f}")
+    for name, v in results["vs_benchmarks"].items():
+        lo, hi = v["diff_ci"]
+        print(f"  vs {name:22s} {v['brier']:.4f}  skill {v['skill']:+.1%}  "
+              f"model minus benchmark {v['diff']:+.4f} (95% CI {lo:+.4f} to {hi:+.4f}, drug bootstrap)")
     print(f"Log loss -- model: {results['log_loss_model']:.4f}  area baseline: {results['log_loss_area']:.4f}")
     print("Train-years rate by disease area:", results["train_area_rates"])
     print("Calibration curve (mean predicted, observed fraction):", results["calibration_curve"])

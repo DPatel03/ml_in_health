@@ -4,8 +4,8 @@ Investors value biotech drugs using fixed success rates from one industry table 
 
 ## Status
 
-- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained and beating the BIO benchmark.
-- **Next:** LightGBM, the other two transitions, calibration tuning.
+- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained; after fixing two lookahead leaks it beats BIO's phase × area table (Brier 0.184 vs 0.191) but only ties BIO's flat rate.
+- **Next:** match approvals to their disease, de-duplicate disease rows, drug-level features, LightGBM, the other two transitions.
 
 ## Label v1 vs BIO 2021
 
@@ -21,21 +21,39 @@ Phase 3 → approval matches BIO for cancer drugs (43.9% vs 43.9%) but is low ov
 
 `build_features.py` pulls trial-design features from AACT (masking, allocation, enrollment, sponsor,
 site counts) and `build_model.py` joins them onto the label table via `entry_nct_id`, then trains
-logistic regression. Enrollment is kept only where `enrollment_type` is `ESTIMATED` and site/country
-counts are left out entirely, since AACT stores the final values for both, not what was known when
-Phase 2 started. Sponsor track record only looks at that sponsor's earlier programs.
+logistic regression. Enrollment and site/country counts are left out of the model, since AACT stores
+the final values for all of them, not what was known when Phase 2 started. (`build_features.py` still
+keeps enrollment where `enrollment_type` is `ESTIMATED`, but that covers only ~5% of training rows and
+those trials skew toward ones that stalled, so using it made the model badly overconfident.) Sponsor track record only uses that sponsor's outcomes that were already known when
+the program entered Phase 2 (a success on its Phase 3 date, a failure only once its 5-year window ran out).
 
-Test set is entries from 2016 on (train is everything before), drugs kept on one side of the split only.
+Train is entries up to 2015, test is entries from 2016 on, with every program of a drug on one side.
+An older drug's 2016+ programs are dropped (1,006 rows) so train never sees test-period outcomes.
 
-| | Brier score |
-|---|---|
-| Logistic regression | 0.169 |
-| BIO 2021 flat rate (28.9%) | 0.186 |
-| Our own area-level rate, training years only | 0.186 |
+The entry trial's phase is a feature: Phase 1/2 trials count as reaching Phase 2 but advance less
+often, and they're 24% of training programs vs 47% of test programs.
 
-The area-only baseline doesn't beat BIO's flat number by itself, so the model's edge is coming from
-the trial-design features, not just the disease area. Calibration (`output/model/calibration_phase2_to_phase3.png`)
-is decent through the middle of the range and overconfident at the high end (predicts ~58%, actual ~45%).
+The main benchmark is BIO's **phase × disease-area table**, since that's what analysts plug into
+valuations; the flat all-indications rate is kept for reference. 95% CIs are for model minus
+benchmark, resampling whole drugs (2,000 draws), since one drug's programs aren't independent.
+Skill = 1 − model Brier / benchmark Brier.
+
+| Benchmark | Brier | Model skill | Model minus benchmark (95% CI) |
+|---|---|---|---|
+| **BIO 2021 by disease area** | 0.1911 | **+3.7%** | −0.0070 (−0.0128 to −0.0010) |
+| BIO 2021 flat rate (28.9%) | 0.1855 | +0.7% | −0.0013 (−0.0060 to +0.0040) |
+| Our own area-level rate, training years only | 0.1841 | 0.0% | +0.0001 (−0.0042 to +0.0047) |
+| *Logistic regression (ours)* | *0.1842* | | |
+
+The model beats BIO's area table, and the CI excludes zero on this split. In robustness checks the
+model stays ahead in earlier test periods (2011–12, 2013–15) and when each drug + trial is counted
+once, but those intervals include zero; the gain comes from non-oncology programs. It doesn't beat
+BIO's flat rate or our own area rates by a meaningful margin. BIO's area table does worse than its own flat rate on 2016+
+programs, so the area differences it reports don't hold up out of sample. An earlier version scored
+0.169, but nearly all of that edge came from a sponsor track record that used outcomes not yet known
+at entry. Calibration (`output/model/calibration_phase2_to_phase3.png`) is close through the middle
+and somewhat overconfident in the top fifth (predicts ~40%, actual ~31%). Part of that is a falling
+base rate: 27.6% of training programs advanced vs 24.2% in test.
 
 ## How the label works
 

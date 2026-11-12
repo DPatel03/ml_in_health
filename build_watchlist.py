@@ -20,15 +20,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from build_model import (HERE, TRANSITION, BIO_RATE, NUMERIC, CATEGORICAL, RECENT_TRAIN_YEAR,
-                          load_bio_area_rates)
+                          make_model, load_bio_area_rates)
 
 LOGIT = lambda p: np.log(np.clip(p, 1e-6, 1 - 1e-6) / (1 - np.clip(p, 1e-6, 1 - 1e-6)))
 
@@ -63,12 +60,8 @@ def build_pending_features(features: pd.DataFrame, transitions: pd.DataFrame) ->
     return df
 
 
-def fit_final_model(labeled: pd.DataFrame) -> Pipeline:
-    pre = ColumnTransformer([
-        ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
-        ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
-    ])
-    model = Pipeline([("pre", pre), ("clf", LogisticRegression(max_iter=1000))])
+def fit_final_model(labeled: pd.DataFrame, model_kind: str = "lightgbm") -> Pipeline:
+    model = make_model(model_kind)
     model.fit(labeled[NUMERIC + CATEGORICAL], labeled.label)
     return model
 
@@ -95,16 +88,17 @@ def main() -> None:
 
     # the same labeled population build_model.py trains and tests on, here combined: no more
     # held-out evaluation to protect once this is the production model for scoring pending programs
-    from build_model import build_program_features
-    labeled = build_program_features(features, transitions)
-    labeled = labeled[labeled.split.isin(["train", "test"])].reset_index(drop=True)
+    from build_model import build_sponsor_pool
+    sponsor_pool = build_sponsor_pool(features, transitions)
+    labeled = sponsor_pool[(sponsor_pool.transition == TRANSITION)].reset_index(drop=True)
     print(f"labeled programs (train+test combined): {len(labeled):,}")
 
     model = fit_final_model(labeled)
     calibrator = fit_calibrator(model, labeled)
 
     pending = build_pending_features(features, transitions)
-    pending["sponsor_track_record"] = sponsor_rate_asof(labeled, pending)
+    # same broadened, all-transitions history used for the labeled model, not just this transition's
+    pending["sponsor_track_record"] = sponsor_rate_asof(sponsor_pool, pending)
     print(f"pending programs scored: {len(pending):,} (of 9,537 total; rest lack a reliable drug ID)")
 
     raw_proba = model.predict_proba(pending[NUMERIC + CATEGORICAL])[:, 1]

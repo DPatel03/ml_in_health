@@ -4,8 +4,8 @@ Investors value biotech drugs using fixed success rates from one industry table 
 
 ## Status
 
-- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained; after fixing two lookahead leaks it beats BIO's phase × area table (Brier 0.184 vs 0.191) but only ties BIO's flat rate. Recalibrated on the most recent training years, which fixed the overconfident top fifth. First pass at the mispricing watchlist, scored on pending programs.
-- **Next:** Purple Book for biologics (would also fix the label gap the watchlist ran into below), match approvals to their disease, de-duplicate disease rows, drug-level features, LightGBM, the other two transitions, the rNPV illustration.
+- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. Phase 2 → 3 model trained (LightGBM, after a logistic baseline and fixing two lookahead leaks); beats BIO's flat rate and phase × area table, both CIs excluding zero. Recalibrated on the most recent training years, which fixed the overconfident top fifth. Mispricing watchlist and an rNPV illustration, both scored on pending programs.
+- **Next:** Purple Book for biologics (would also fix the label gap the watchlist ran into below), match approvals to their disease, de-duplicate disease rows, drug-level features (mechanism, FDA designations), the other two transitions.
 
 ## Label v1 vs BIO 2021
 
@@ -17,18 +17,24 @@ Investors value biotech drugs using fixed success rates from one industry table 
 
 Phase 3 → approval matches BIO for cancer drugs (43.9% vs 43.9%) but is low overall, because vaccines and blood products aren't in Drugs@FDA. More breakdowns are in `output/labels/`.
 
-## Phase 2 → 3 baseline model
+## Phase 2 → 3 model
 
 `build_features.py` pulls trial-design features from AACT (masking, allocation, enrollment, sponsor,
-site counts) and `build_model.py` joins them onto the label table via `entry_nct_id`, then trains
-logistic regression. Enrollment and site/country counts are left out of the model, since AACT stores
-the final values for all of them, not what was known when Phase 2 started. (`build_features.py` still
-keeps enrollment where `enrollment_type` is `ESTIMATED`, but that covers only ~5% of training rows and
-those trials skew toward ones that stalled, so using it made the model badly overconfident.) Sponsor track record only uses that sponsor's outcomes that were already known when
-the program entered Phase 2 (a success on its Phase 3 date, a failure only once its 5-year window ran out).
+site counts) and `build_model.py` joins them onto the label table via `entry_nct_id`, then trains a
+model (`--model lightgbm`, default, or `--model logistic` for the original baseline). Enrollment and
+site/country counts are left out, since AACT stores the final values for all of them, not what was
+known when Phase 2 started. (`build_features.py` still keeps enrollment where `enrollment_type` is
+`ESTIMATED`, but that covers only ~5% of training rows and those trials skew toward ones that
+stalled, so using it made the model badly overconfident.) Sponsor track record only uses that
+sponsor's outcomes already known when the program entered Phase 2 (a success on its next-phase date,
+a failure only once its window ran out), and now spans **all three transitions**, not just this one
+-- a sponsor's Phase 1 → 2 and Phase 3 → approval record count too. `primary_purpose` (treatment,
+prevention, diagnostic, ...) is a feature as well; it was sitting unused in the features table.
 
 Train is entries up to 2015, test is entries from 2016 on, with every program of a drug on one side.
-An older drug's 2016+ programs are dropped (1,006 rows) so train never sees test-period outcomes.
+An older drug's 2016+ programs are dropped from this split (1,006 rows) so train never sees
+test-period outcomes; the final model used for the watchlist below retrains on all 8,438 labeled
+programs, since there's no more held-out evaluation to protect at that point.
 
 The entry trial's phase is a feature: Phase 1/2 trials count as reaching Phase 2 but advance less
 often, and they're 24% of training programs vs 47% of test programs.
@@ -36,47 +42,51 @@ often, and they're 24% of training programs vs 47% of test programs.
 The main benchmark is BIO's **phase × disease-area table**, since that's what analysts plug into
 valuations; the flat all-indications rate is kept for reference. 95% CIs are for model minus
 benchmark, resampling whole drugs (2,000 draws), since one drug's programs aren't independent.
-Skill = 1 − model Brier / benchmark Brier.
+Skill = 1 − model Brier / benchmark Brier. LightGBM is small and heavily regularized (7 leaves,
+min 40 samples per leaf) given ~4,700 training rows; train Brier (0.179) vs test Brier before
+recalibration (0.185) is a modest gap, not runaway overfitting.
 
 | Benchmark | Brier | Model skill | Model minus benchmark (95% CI) |
 |---|---|---|---|
-| **BIO 2021 by disease area** | 0.1911 | **+3.9%** | −0.0075 (−0.0115 to −0.0037) |
-| BIO 2021 flat rate (28.9%) | 0.1855 | +1.0% | −0.0018 (−0.0035 to +0.0000) |
-| Our own area-level rate, training years only | 0.1841 | +0.2% | −0.0004 (−0.0022 to +0.0013) |
-| *Logistic regression, recalibrated (ours)* | *0.1837* | | |
+| **BIO 2021 by disease area** | 0.1911 | **+4.9%** | −0.0094 (−0.0145 to −0.0047) |
+| **BIO 2021 flat rate (28.9%)** | 0.1855 | **+2.0%** | −0.0037 (−0.0063 to −0.0010) |
+| Our own area-level rate, training years only | 0.1841 | +1.3% | −0.0023 (−0.0056 to +0.0007) |
+| *LightGBM, recalibrated (ours)* | *0.1818* | | |
 
-The model beats BIO's area table, and the CI excludes zero on this split. In robustness checks the
-model stays ahead in earlier test periods (2011–12, 2013–15) and when each drug + trial is counted
-once, but those intervals include zero; the gain comes from non-oncology programs. It doesn't beat
-BIO's flat rate or our own area rates by a meaningful margin. BIO's area table does worse than its own flat rate on 2016+
-programs, so the area differences it reports don't hold up out of sample. An earlier version scored
-0.169, but nearly all of that edge came from a sponsor track record that used outcomes not yet known
-at entry.
+The model now beats both BIO's area table **and its flat rate**, with the CI excluding zero on
+each; only the comparison against our own area rates still includes zero. The earlier logistic
+baseline (0.1837) only cleared the area-table bar. In robustness checks the model stays ahead in
+earlier test periods and when each drug + trial is counted once, but those intervals include zero;
+the gain comes from non-oncology programs. BIO's area table does worse than its own flat rate on
+2016+ programs, so the area differences it reports don't hold up out of sample. An earlier version
+scored 0.169, but nearly all of that edge came from a sponsor track record that used outcomes not
+yet known at entry.
 
 Calibration (`output/model/calibration_phase2_to_phase3.png`) was close through the middle but
 overconfident in the top fifth (predicted ~40%, actual ~31%), partly because the training years had
 a higher success rate than test: 27.6% vs 24.2%. We recalibrated with Platt scaling fit on
 out-of-fold predictions from the 2011–2015 training cohort, the years closest to test. That pulled
-the top fifth in to ~33% predicted vs ~31% actual and tightened the gap across every bin, at a
-small Brier improvement (0.1842 → 0.1837). The table above already reflects the recalibrated model.
+the top fifth in and tightened the gap across every bin. The table above already reflects the
+recalibrated model.
 
 ## Mispricing watchlist
 
-`build_watchlist.py` refits the model on every labeled program (train + test, since there's no more
-held-out split to protect) and scores pending Phase 2 → 3 programs, ranking them by how far our
-probability diverges from BIO's disease-area rate. Of the 9,537 pending programs, only **1,901**
-have a resolved drug identity and a US site (`in_v1_label_set`) -- the same bar used everywhere
-else -- so only those are scored. Output: `output/model/watchlist_phase2_to_phase3.csv`.
+`build_watchlist.py` refits the model on every labeled program across all three transitions (8,438
+Phase 2 → 3 programs once the train/test split is no longer needed) and scores pending Phase 2 → 3
+programs, ranking them by how far our probability diverges from BIO's disease-area rate. Of the
+9,537 pending programs, only **1,901** have a resolved drug identity and a US site
+(`in_v1_label_set`) -- the same bar used everywhere else -- so only those are scored. Output:
+`output/model/watchlist_phase2_to_phase3.csv`.
 
-Before trusting a "mispriced" program, check its `reliable` column. Our own training-years rate
-runs well below BIO's in exactly the disease areas with the Drugs@FDA biologics gap described above
-(Hematology −16pp, Others −14pp, Gastroenterology −13pp, Ophthalmology −8pp, Infectious disease −6pp,
-Psychiatry and Urology also flagged) -- a large divergence there is likely that label gap showing up
-again, not real mispricing, so those rows are marked unreliable and excluded from the ranked list.
-The reliable watchlist shows the model both more optimistic than BIO (e.g. several oncology programs,
-+13 to +16pp) and more pessimistic (metabolic programs, −13 to −16pp) -- a real, two-directional
-result, not a one-sided artifact. Fixing the label gap with the Purple Book should make more of the
-9,537 scoreable and may change which disease areas are trustworthy.
+Before trusting a "mispriced" program, check its `reliable` column. Our own training rate runs more
+than 5pp off BIO's in six disease areas: Hematology (−18pp), Others (−14pp), Infectious disease
+(−12pp), Gastroenterology (−12pp), Ophthalmology (−10pp) and Urology (+7pp) -- the first five match
+the Drugs@FDA biologics gap described above, so a large divergence there is likely that label gap
+showing up again, not real mispricing. Those rows are marked unreliable and excluded from the ranked
+list. The reliable watchlist shows the model both more optimistic than BIO (oncology, cardiovascular,
+respiratory programs, +19 to +21pp) and more pessimistic (metabolic programs, −20 to −28pp) -- a
+real, two-directional result, not a one-sided artifact. Fixing the label gap with the Purple Book
+should make more of the 9,537 scoreable and may change which disease areas are trustworthy.
 
 ## rNPV illustration
 
@@ -94,8 +104,8 @@ the probability swing into a dollar one for illustration.
 
 | Drug (sponsor, area) | BIO P(P2→3) | Our P(P2→3) | BIO rNPV | Our rNPV | Change |
 |---|---|---|---|---|---|
-| sonrotoclax (BeiGene, Oncology) | 24.6% | 37.4% | $108.0M | $164.2M | **+52.0%** |
-| etentamig (AbbVie, Metabolic) | 45.0% | 30.4% | $250.2M | $169.0M | **−32.4%** |
+| sonrotoclax (BeiGene, Oncology) | 24.6% | 36.3% | $108.0M | $159.4M | **+47.6%** |
+| etentamig (AbbVie, Metabolic) | 45.0% | 30.0% | $250.2M | $166.8M | **−33.3%** |
 
 One up, one down -- not a one-directional artifact. Output: `output/model/rnpv_illustration.csv`.
 

@@ -18,6 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from lightgbm import LGBMClassifier
 from sklearn.base import clone
 from sklearn.calibration import calibration_curve
 from sklearn.compose import ColumnTransformer
@@ -41,7 +42,7 @@ BIO_RATE = 0.289  # BIO 2021, phase2_to_phase3, all indications -- LABEL_RULES.m
 NUMERIC = ["number_of_arms", "sponsor_track_record", "has_us_site"]
 # phase = entry trial's phase. Phase 1/2 trials count as reaching Phase 2 but advance less often
 # (21-24% vs 27-29%), and their share doubles from train (24%) to test (47%).
-CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area"]
+CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area", "primary_purpose"]
 N_BOOT = 2000
 
 
@@ -66,17 +67,21 @@ def make_placeholder_labels(features: pd.DataFrame, n: int = 1200, seed: int = 0
     })
 
 
+def build_sponsor_pool(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
+    """Every labeled program across all three transitions, with sponsor_track_record computed over
+    that whole pool -- a sponsor's Phase 1->2 and Phase 3->approval record counts toward its track
+    record here too, not just its record on whichever transition is being modeled."""
+    pool = transitions[transitions.in_v1_label_set & transitions.label.notna()].copy()
+    pool = pool.merge(features, left_on="entry_nct_id", right_on="nct_id", how="inner")
+    pool["has_us_site"] = pool.has_us_site.astype(float)
+    pool = pool.sort_values("entry_date").reset_index(drop=True)
+    pool["sponsor_track_record"] = sponsor_track_record(pool)
+    return pool
+
+
 def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
-    t = transitions[transitions.transition == TRANSITION].copy()
-    t = t[t.in_v1_label_set & t.label.notna()]
-
-    # exact entry trial per row (drug + disease), from Deep's entry_nct_id
-    df = t.merge(features, left_on="entry_nct_id", right_on="nct_id", how="inner")
-    df["log_enrollment"] = np.log1p(df.enrollment)
-    df["has_us_site"] = df.has_us_site.astype(float)
-
-    df = df.sort_values("entry_date").reset_index(drop=True)
-    df["sponsor_track_record"] = sponsor_track_record(df)
+    pool = build_sponsor_pool(features, transitions)
+    df = pool[pool.transition == TRANSITION].reset_index(drop=True)
 
     # strict time split: train on entries up to 2015, test on 2016+, and keep every program of the
     # same drug on one side (LABEL_RULES.md #8). An older drug's 2016+ programs fit neither side,
@@ -88,10 +93,10 @@ def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame) ->
 
 
 def sponsor_track_record(df: pd.DataFrame) -> np.ndarray:
-    """That sponsor's label rate on programs whose outcome was already known before this one entered.
-    A success is known on next_date, a failure only once its window ran out (entry + window_years),
-    so a program entered in 2014 can't inform a 2016 prediction if it failed. Same transition only,
-    for now -- broaden to all three transitions later."""
+    """That sponsor's label rate on programs whose outcome was already known before this one entered,
+    across all three transitions. A success is known on next_date, a failure only once its window
+    ran out (entry + window_years), so a program entered in 2014 can't inform a 2016 prediction if
+    it failed."""
     known_date = df.next_date.where(df.label == 1, df.entry_date + pd.to_timedelta(df.window_years * 365.25, unit="D"))
     track_record = np.full(len(df), np.nan)
     for _, idx in df.groupby("lead_sponsor_name").indices.items():
@@ -142,12 +147,21 @@ def recalibrate(model: Pipeline, train: pd.DataFrame, raw_test_proba: np.ndarray
     return platt.predict_proba(logit(raw_test_proba).reshape(-1, 1))[:, 1]
 
 
-def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) -> dict:
+def make_model(kind: str) -> Pipeline:
     pre = ColumnTransformer([
         ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
         ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
     ])
-    model = Pipeline([("pre", pre), ("clf", LogisticRegression(max_iter=1000))])
+    # small, heavily-regularized LightGBM: ~4,700 training rows is little data for gradient boosting,
+    # so few leaves and a high min_child_samples keep it from just memorizing sponsor/trial quirks
+    clf = (LogisticRegression(max_iter=1000) if kind == "logistic" else
+           LGBMClassifier(n_estimators=150, num_leaves=7, min_child_samples=40, learning_rate=0.05,
+                           reg_lambda=1.0, verbosity=-1))
+    return Pipeline([("pre", pre), ("clf", clf)])
+
+
+def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None, model_kind: str = "logistic") -> dict:
+    model = make_model(model_kind)
 
     train, test = df[df.split == "train"], df[df.split == "test"]
     model.fit(train[NUMERIC + CATEGORICAL], train.label)
@@ -193,13 +207,13 @@ def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) 
     }
 
 
-def plot_calibration(results: dict, out: Path) -> None:
+def plot_calibration(results: dict, out: Path, model_kind: str) -> None:
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot([0, 1], [0, 1], "k--", linewidth=1, label="perfectly calibrated")
     raw_xs, raw_ys = zip(*results["calibration_curve_raw"])
     ax.plot(raw_xs, raw_ys, "o--", color="tab:gray", alpha=0.7, label="before recalibration")
     xs, ys = zip(*results["calibration_curve"])
-    ax.plot(xs, ys, "o-", label="recalibrated (ours)")
+    ax.plot(xs, ys, "o-", label=f"recalibrated ({model_kind})")
     ax.plot(BIO_RATE, results["test_positive_rate"], "s", color="tab:orange", markersize=9,
             label=f"BIO 2021 flat rate ({BIO_RATE})")
     ax.set_xlabel("Mean predicted probability")
@@ -218,6 +232,7 @@ def main() -> None:
     p.add_argument("--features", type=Path, default=HERE / "output" / "model" / "trial_design_features.csv")
     p.add_argument("--transitions", type=Path, default=HERE / "output" / "labels" / "transitions.csv")
     p.add_argument("--bio", type=Path, default=HERE / "external" / "bio" / "bio2021_phase_transitions.csv")
+    p.add_argument("--model", choices=["logistic", "lightgbm"], default="lightgbm")
     a = p.parse_args()
 
     features = pd.read_csv(a.features, parse_dates=["start"])
@@ -233,8 +248,8 @@ def main() -> None:
     print(f"programs with features + label: {len(df):,} "
           f"(train {len(df[df.split == 'train']):,}, test {len(df[df.split == 'test']):,})")
 
-    results = fit_and_evaluate(df, load_bio_area_rates(a.bio))
-    print(f"\nn_train={results['n_train']} n_test={results['n_test']} "
+    results = fit_and_evaluate(df, load_bio_area_rates(a.bio), model_kind=a.model)
+    print(f"\nmodel={a.model} n_train={results['n_train']} n_test={results['n_test']} "
           f"test positive rate={results['test_positive_rate']:.3f}")
     print(f"Brier -- model: {results['brier_model']:.4f} (before recalibration: {results['brier_model_raw']:.4f})")
     for name, v in results["vs_benchmarks"].items():
@@ -244,7 +259,7 @@ def main() -> None:
     print(f"Log loss -- model: {results['log_loss_model']:.4f}  area baseline: {results['log_loss_area']:.4f}")
     print("Train-years rate by disease area:", results["train_area_rates"])
     print("Calibration curve (mean predicted, observed fraction):", results["calibration_curve"])
-    plot_calibration(results, HERE / "output" / "model" / "calibration_phase2_to_phase3.png")
+    plot_calibration(results, HERE / "output" / "model" / "calibration_phase2_to_phase3.png", a.model)
 
 
 if __name__ == "__main__":

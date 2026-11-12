@@ -1,3 +1,3 @@
 drug,sponsor,disease_area,BIO P(Phase2->3),Our P(Phase2->3),"P(Phase3->approval), BIO (held constant)",BIO cumulative PoS,Our cumulative PoS,BIO rNPV ($M),Our rNPV ($M),rNPV change
-sonrotoclax,BeiGene,Oncology,0.246,0.374,0.439,0.108,0.164,108.0,164.2,+52.0%
-etentamig,AbbVie,Metabolic,0.45,0.304,0.556,0.25,0.169,250.2,169.0,-32.4%
+sonrotoclax,BeiGene,Oncology,0.246,0.363,0.439,0.108,0.159,108.0,159.4,+47.6%
+etentamig,AbbVie,Metabolic,0.45,0.3,0.556,0.25,0.167,250.2,166.8,-33.3%

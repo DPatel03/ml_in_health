@@ -39,7 +39,12 @@ BIO_RATE = 0.289  # BIO 2021, phase2_to_phase3, all indications -- LABEL_RULES.m
 # training rows but ~16% of test rows, and trials still carrying an estimate advance less often
 # (11-14% vs 26-29%). Median-imputing the rest made the few real values extreme outliers, which
 # drove the overconfident top fifth (predicted ~50%, actual ~23%).
-NUMERIC = ["number_of_arms", "sponsor_track_record", "has_us_site"]
+# genetic_evidence_score (build_genetic_evidence.py): today's Open Targets snapshot, not what was
+# known when Phase 2 started -- genetic-association databases have grown a lot since 2005, so older
+# programs' targets look less genetically supported than they would if queried at the time. Not
+# outcome leakage (independent of whether this trial succeeded), but a real temporal confound worth
+# flagging rather than treating this as clean as the other features.
+NUMERIC = ["number_of_arms", "sponsor_track_record", "has_us_site", "genetic_evidence_score"]
 # phase = entry trial's phase. Phase 1/2 trials count as reaching Phase 2 but advance less often
 # (21-24% vs 27-29%), and their share doubles from train (24%) to test (47%).
 CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area", "primary_purpose"]
@@ -67,7 +72,15 @@ def make_placeholder_labels(features: pd.DataFrame, n: int = 1200, seed: int = 0
     })
 
 
-def build_sponsor_pool(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
+def load_genetic_evidence(path: Path) -> pd.Series:
+    """drug_id -> Open Targets genetic-evidence score (build_genetic_evidence.py). Missing for
+    non-ChEMBL drug ids and ones Open Targets has no mechanism-of-action data for."""
+    ge = pd.read_csv(path)
+    return ge.set_index("drug_id").genetic_evidence_score
+
+
+def build_sponsor_pool(features: pd.DataFrame, transitions: pd.DataFrame,
+                        genetic_evidence: pd.Series | None = None) -> pd.DataFrame:
     """Every labeled program across all three transitions, with sponsor_track_record computed over
     that whole pool -- a sponsor's Phase 1->2 and Phase 3->approval record counts toward its track
     record here too, not just its record on whichever transition is being modeled."""
@@ -76,11 +89,14 @@ def build_sponsor_pool(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.
     pool["has_us_site"] = pool.has_us_site.astype(float)
     pool = pool.sort_values("entry_date").reset_index(drop=True)
     pool["sponsor_track_record"] = sponsor_track_record(pool)
+    pool["genetic_evidence_score"] = (pool.drug_id.map(genetic_evidence) if genetic_evidence is not None
+                                       else np.nan)
     return pool
 
 
-def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
-    pool = build_sponsor_pool(features, transitions)
+def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame,
+                            genetic_evidence: pd.Series | None = None) -> pd.DataFrame:
+    pool = build_sponsor_pool(features, transitions, genetic_evidence)
     df = pool[pool.transition == TRANSITION].reset_index(drop=True)
 
     # strict time split: train on entries up to 2015, test on 2016+, and keep every program of the
@@ -152,11 +168,11 @@ def make_model(kind: str) -> Pipeline:
         ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
         ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
     ])
-    # ~4,700 training rows is little data for gradient boosting; num_leaves=3, min_child_samples=40,
-    # n_estimators=100 chosen by 5-fold CV grid search on train only (CV Brier 0.1953 vs 0.1996 for
-    # an earlier hand-picked num_leaves=7) -- this small a dataset wants very shallow trees
+    # ~4,700 training rows is little data for gradient boosting; chosen by 5-fold CV grid search on
+    # train only, re-run after adding genetic_evidence_score (CV Brier 0.1885 vs 0.1911 for the
+    # pre-genetic-evidence tuning) -- this small a dataset wants very shallow trees either way
     clf = (LogisticRegression(max_iter=1000) if kind == "logistic" else
-           LGBMClassifier(n_estimators=100, num_leaves=3, min_child_samples=40, learning_rate=0.05,
+           LGBMClassifier(n_estimators=300, num_leaves=3, min_child_samples=40, learning_rate=0.10,
                            reg_lambda=1.0, verbosity=-1))
     return Pipeline([("pre", pre), ("clf", clf)])
 
@@ -233,6 +249,8 @@ def main() -> None:
     p.add_argument("--features", type=Path, default=HERE / "output" / "model" / "trial_design_features.csv")
     p.add_argument("--transitions", type=Path, default=HERE / "output" / "labels" / "transitions.csv")
     p.add_argument("--bio", type=Path, default=HERE / "external" / "bio" / "bio2021_phase_transitions.csv")
+    p.add_argument("--genetic-evidence", type=Path,
+                    default=HERE / "external" / "opentargets" / "genetic_evidence.csv")
     p.add_argument("--model", choices=["logistic", "lightgbm"], default="lightgbm")
     a = p.parse_args()
 
@@ -245,7 +263,8 @@ def main() -> None:
               f"the pipeline. Do not report these numbers.")
         transitions = make_placeholder_labels(features)
 
-    df = build_program_features(features, transitions)
+    genetic_evidence = load_genetic_evidence(a.genetic_evidence) if a.genetic_evidence.is_file() else None
+    df = build_program_features(features, transitions, genetic_evidence)
     print(f"programs with features + label: {len(df):,} "
           f"(train {len(df[df.split == 'train']):,}, test {len(df[df.split == 'test']):,})")
 

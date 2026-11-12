@@ -8,6 +8,7 @@ unmatched_drug_names.xlsx
 external/drugsatfda/
 external/chembl/
 external/bio/*.pdf
+external/opentargets/_raw_cache.json
 
 # Python, editors, OS
 __pycache__/

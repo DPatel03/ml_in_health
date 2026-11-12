@@ -25,7 +25,7 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import Pipeline
 
 from build_model import (HERE, TRANSITION, BIO_RATE, NUMERIC, CATEGORICAL, RECENT_TRAIN_YEAR,
-                          make_model, load_bio_area_rates)
+                          make_model, load_bio_area_rates, load_genetic_evidence)
 
 LOGIT = lambda p: np.log(np.clip(p, 1e-6, 1 - 1e-6) / (1 - np.clip(p, 1e-6, 1 - 1e-6)))
 
@@ -52,11 +52,13 @@ def sponsor_rate_asof(history: pd.DataFrame, targets: pd.DataFrame) -> np.ndarra
     return out
 
 
-def build_pending_features(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
+def build_pending_features(features: pd.DataFrame, transitions: pd.DataFrame,
+                            genetic_evidence: pd.Series | None = None) -> pd.DataFrame:
     t = transitions[(transitions.transition == TRANSITION) & (transitions.outcome == "pending")
                      & transitions.in_v1_label_set].copy()
     df = t.merge(features, left_on="entry_nct_id", right_on="nct_id", how="inner")
     df["has_us_site"] = df.has_us_site.astype(float)
+    df["genetic_evidence_score"] = df.drug_id.map(genetic_evidence) if genetic_evidence is not None else np.nan
     return df
 
 
@@ -78,6 +80,8 @@ def main() -> None:
     p.add_argument("--features", type=Path, default=HERE / "output" / "model" / "trial_design_features.csv")
     p.add_argument("--transitions", type=Path, default=HERE / "output" / "labels" / "transitions.csv")
     p.add_argument("--bio", type=Path, default=HERE / "external" / "bio" / "bio2021_phase_transitions.csv")
+    p.add_argument("--genetic-evidence", type=Path,
+                    default=HERE / "external" / "opentargets" / "genetic_evidence.csv")
     p.add_argument("--out", type=Path, default=HERE / "output" / "model" / "watchlist_phase2_to_phase3.csv")
     p.add_argument("--top", type=int, default=20)
     a = p.parse_args()
@@ -85,18 +89,19 @@ def main() -> None:
     features = pd.read_csv(a.features, parse_dates=["start"])
     transitions = pd.read_csv(a.transitions, parse_dates=["entry_date", "next_date"])
     bio_area_rates = load_bio_area_rates(a.bio)
+    genetic_evidence = load_genetic_evidence(a.genetic_evidence) if a.genetic_evidence.is_file() else None
 
     # the same labeled population build_model.py trains and tests on, here combined: no more
     # held-out evaluation to protect once this is the production model for scoring pending programs
     from build_model import build_sponsor_pool
-    sponsor_pool = build_sponsor_pool(features, transitions)
+    sponsor_pool = build_sponsor_pool(features, transitions, genetic_evidence)
     labeled = sponsor_pool[(sponsor_pool.transition == TRANSITION)].reset_index(drop=True)
     print(f"labeled programs (train+test combined): {len(labeled):,}")
 
     model = fit_final_model(labeled)
     calibrator = fit_calibrator(model, labeled)
 
-    pending = build_pending_features(features, transitions)
+    pending = build_pending_features(features, transitions, genetic_evidence)
     # same broadened, all-transitions history used for the labeled model, not just this transition's
     pending["sponsor_track_record"] = sponsor_rate_asof(sponsor_pool, pending)
     print(f"pending programs scored: {len(pending):,} (of 9,537 total; rest lack a reliable drug ID)")

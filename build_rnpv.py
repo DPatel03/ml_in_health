@@ -23,7 +23,7 @@ ILLUSTRATIVE_VALUE_IF_APPROVED = 1_000  # $M, hypothetical, same for every progr
 
 # real pending programs from our own watchlist -- picked for large, unambiguous public sponsors so
 # there's no risk of mismatching a drug to the wrong company
-EXAMPLES = ["sonrotoclax", "etentamig"]
+EXAMPLES = ["spartalizumab", "etentamig"]
 
 
 def phase3_to_approval_rates(bio_path: Path) -> pd.Series:

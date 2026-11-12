@@ -78,6 +78,27 @@ The reliable watchlist shows the model both more optimistic than BIO (e.g. sever
 result, not a one-sided artifact. Fixing the label gap with the Purple Book should make more of the
 9,537 scoreable and may change which disease areas are trustworthy.
 
+## rNPV illustration
+
+`build_rnpv.py` shows what swapping our Phase 2 → 3 estimate for BIO's does to a simple rNPV, on
+two real pending programs from the reliable watchlist above: **sonrotoclax (BeiGene, Oncology)**
+and **etentamig (AbbVie, Metabolic)**. These are the actual drug and sponsor names from AACT, not
+invented examples.
+
+rNPV = P(Phase 2 → 3) × P(Phase 3 → approval) × V. We haven't modeled Phase 3 → approval yet, so
+P(Phase 3 → approval) is BIO's own disease-area rate in both scenarios -- only the Phase 2 → 3 term
+changes, which isolates exactly what our model adds. **V is a hypothetical $1,000M "value if
+approved," the same number in both scenarios** -- we have no real revenue or pipeline data for
+these companies, so V is not a valuation claim about BeiGene or AbbVie, only a constant that turns
+the probability swing into a dollar one for illustration.
+
+| Drug (sponsor, area) | BIO P(P2→3) | Our P(P2→3) | BIO rNPV | Our rNPV | Change |
+|---|---|---|---|---|---|
+| sonrotoclax (BeiGene, Oncology) | 24.6% | 37.4% | $108.0M | $164.2M | **+52.0%** |
+| etentamig (AbbVie, Metabolic) | 45.0% | 30.4% | $250.2M | $169.0M | **−32.4%** |
+
+One up, one down -- not a one-directional artifact. Output: `output/model/rnpv_illustration.csv`.
+
 ## How the label works
 
 Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
@@ -98,6 +119,7 @@ Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
 | `build_features.py` | Trial-design features from AACT |
 | `build_model.py` | Joins features to the labels, trains the baseline model |
 | `build_watchlist.py` | Scores pending programs for the mispricing watchlist |
+| `build_rnpv.py` | Illustrative rNPV swap on two real pending programs |
 | `output/model/` | Feature table and the Phase 2 → 3 calibration plot |
 | `external/bio/bio2021_phase_transitions.csv` | BIO 2021 success rates |
 | `tests/` | Tests for the label code |
@@ -125,6 +147,7 @@ python3 build_labels.py     # builds output/labels/ (~30 s)
 python3 build_features.py   # builds output/model/trial_design_features.csv
 python3 build_model.py      # trains the Phase 2 -> 3 baseline, writes output/model/calibration_phase2_to_phase3.png
 python3 build_watchlist.py  # scores pending programs, writes output/model/watchlist_phase2_to_phase3.csv
+python3 build_rnpv.py       # rNPV illustration, writes output/model/rnpv_illustration.csv
 python3 -m pytest           # tests (no data needed)
 ```
 

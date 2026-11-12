@@ -18,11 +18,13 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.base import clone
 from sklearn.calibration import calibration_curve
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss, log_loss
+from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -124,6 +126,22 @@ def clustered_bootstrap_ci(diff: np.ndarray, groups: np.ndarray, n_boot: int = N
     return tuple(np.percentile(means, [2.5, 97.5]))
 
 
+RECENT_TRAIN_YEAR = 2011  # recalibrate on the 2011-2015 cohort: the training years closest to test
+
+
+def recalibrate(model: Pipeline, train: pd.DataFrame, raw_test_proba: np.ndarray) -> np.ndarray:
+    """Platt-scale the model's output, fit only on its most recent training years. The audit found
+    the model overpredicts because success rates fell after 2015 and training skews older; a
+    calibrator fit on train's own tail should track that shift better than one fit on all of train.
+    Uses out-of-fold predictions on train, not in-sample ones, so the calibrator isn't just undoing
+    overfitting it never saw."""
+    oof = cross_val_predict(clone(model), train[NUMERIC + CATEGORICAL], train.label, cv=5, method="predict_proba")[:, 1]
+    recent = (train.entry_date.dt.year >= RECENT_TRAIN_YEAR).to_numpy()
+    logit = lambda p: np.log(np.clip(p, 1e-6, 1 - 1e-6) / (1 - np.clip(p, 1e-6, 1 - 1e-6)))
+    platt = LogisticRegression().fit(logit(oof[recent]).reshape(-1, 1), train.label.to_numpy()[recent])
+    return platt.predict_proba(logit(raw_test_proba).reshape(-1, 1))[:, 1]
+
+
 def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) -> dict:
     pre = ColumnTransformer([
         ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
@@ -133,8 +151,10 @@ def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) 
 
     train, test = df[df.split == "train"], df[df.split == "test"]
     model.fit(train[NUMERIC + CATEGORICAL], train.label)
-    proba = model.predict_proba(test[NUMERIC + CATEGORICAL])[:, 1]
+    raw_proba = model.predict_proba(test[NUMERIC + CATEGORICAL])[:, 1]
+    proba = recalibrate(model, train, raw_proba)
 
+    raw_frac_pos, raw_mean_pred = calibration_curve(test.label, raw_proba, n_bins=5, strategy="quantile")
     frac_pos, mean_pred = calibration_curve(test.label, proba, n_bins=5, strategy="quantile")
     bio_proba = np.full(len(test), BIO_RATE)
 
@@ -160,12 +180,14 @@ def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) 
     return {
         "n_train": len(train), "n_test": len(test),
         "brier_model": brier_model,
+        "brier_model_raw": brier_score_loss(y, raw_proba),
         "brier_bio": brier_score_loss(test.label, bio_proba),
         "brier_area": brier_score_loss(test.label, area_proba),
         "vs_benchmarks": vs,
         "log_loss_model": log_loss(test.label, proba, labels=[0, 1]),
         "log_loss_area": log_loss(test.label, area_proba, labels=[0, 1]),
         "calibration_curve": list(zip(mean_pred.round(3), frac_pos.round(3))),
+        "calibration_curve_raw": list(zip(raw_mean_pred.round(3), raw_frac_pos.round(3))),
         "test_positive_rate": test.label.mean(),
         "train_area_rates": area_rate.round(3).to_dict(),
     }
@@ -174,8 +196,10 @@ def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) 
 def plot_calibration(results: dict, out: Path) -> None:
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot([0, 1], [0, 1], "k--", linewidth=1, label="perfectly calibrated")
+    raw_xs, raw_ys = zip(*results["calibration_curve_raw"])
+    ax.plot(raw_xs, raw_ys, "o--", color="tab:gray", alpha=0.7, label="before recalibration")
     xs, ys = zip(*results["calibration_curve"])
-    ax.plot(xs, ys, "o-", label="logistic regression (ours)")
+    ax.plot(xs, ys, "o-", label="recalibrated (ours)")
     ax.plot(BIO_RATE, results["test_positive_rate"], "s", color="tab:orange", markersize=9,
             label=f"BIO 2021 flat rate ({BIO_RATE})")
     ax.set_xlabel("Mean predicted probability")
@@ -212,7 +236,7 @@ def main() -> None:
     results = fit_and_evaluate(df, load_bio_area_rates(a.bio))
     print(f"\nn_train={results['n_train']} n_test={results['n_test']} "
           f"test positive rate={results['test_positive_rate']:.3f}")
-    print(f"Brier -- model: {results['brier_model']:.4f}")
+    print(f"Brier -- model: {results['brier_model']:.4f} (before recalibration: {results['brier_model_raw']:.4f})")
     for name, v in results["vs_benchmarks"].items():
         lo, hi = v["diff_ci"]
         print(f"  vs {name:22s} {v['brier']:.4f}  skill {v['skill']:+.1%}  "

@@ -4,7 +4,7 @@ Investors value biotech drugs using fixed success rates from one industry table 
 
 ## Status
 
-- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained; after fixing two lookahead leaks it beats BIO's phase × area table (Brier 0.184 vs 0.191) but only ties BIO's flat rate.
+- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained; after fixing two lookahead leaks it beats BIO's phase × area table (Brier 0.184 vs 0.191) but only ties BIO's flat rate. Recalibrated on the most recent training years, which fixed the overconfident top fifth.
 - **Next:** match approvals to their disease, de-duplicate disease rows, drug-level features, LightGBM, the other two transitions.
 
 ## Label v1 vs BIO 2021
@@ -40,10 +40,10 @@ Skill = 1 − model Brier / benchmark Brier.
 
 | Benchmark | Brier | Model skill | Model minus benchmark (95% CI) |
 |---|---|---|---|
-| **BIO 2021 by disease area** | 0.1911 | **+3.7%** | −0.0070 (−0.0128 to −0.0010) |
-| BIO 2021 flat rate (28.9%) | 0.1855 | +0.7% | −0.0013 (−0.0060 to +0.0040) |
-| Our own area-level rate, training years only | 0.1841 | 0.0% | +0.0001 (−0.0042 to +0.0047) |
-| *Logistic regression (ours)* | *0.1842* | | |
+| **BIO 2021 by disease area** | 0.1911 | **+3.9%** | −0.0075 (−0.0115 to −0.0037) |
+| BIO 2021 flat rate (28.9%) | 0.1855 | +1.0% | −0.0018 (−0.0035 to +0.0000) |
+| Our own area-level rate, training years only | 0.1841 | +0.2% | −0.0004 (−0.0022 to +0.0013) |
+| *Logistic regression, recalibrated (ours)* | *0.1837* | | |
 
 The model beats BIO's area table, and the CI excludes zero on this split. In robustness checks the
 model stays ahead in earlier test periods (2011–12, 2013–15) and when each drug + trial is counted
@@ -51,9 +51,14 @@ once, but those intervals include zero; the gain comes from non-oncology program
 BIO's flat rate or our own area rates by a meaningful margin. BIO's area table does worse than its own flat rate on 2016+
 programs, so the area differences it reports don't hold up out of sample. An earlier version scored
 0.169, but nearly all of that edge came from a sponsor track record that used outcomes not yet known
-at entry. Calibration (`output/model/calibration_phase2_to_phase3.png`) is close through the middle
-and somewhat overconfident in the top fifth (predicts ~40%, actual ~31%). Part of that is a falling
-base rate: 27.6% of training programs advanced vs 24.2% in test.
+at entry.
+
+Calibration (`output/model/calibration_phase2_to_phase3.png`) was close through the middle but
+overconfident in the top fifth (predicted ~40%, actual ~31%), partly because the training years had
+a higher success rate than test: 27.6% vs 24.2%. We recalibrated with Platt scaling fit on
+out-of-fold predictions from the 2011–2015 training cohort, the years closest to test. That pulled
+the top fifth in to ~33% predicted vs ~31% actual and tightened the gap across every bin, at a
+small Brier improvement (0.1842 → 0.1837). The table above already reflects the recalibrated model.
 
 ## How the label works
 

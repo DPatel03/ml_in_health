@@ -4,8 +4,8 @@ Investors value biotech drugs using fixed success rates from one industry table 
 
 ## Status
 
-- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained; after fixing two lookahead leaks it beats BIO's phase × area table (Brier 0.184 vs 0.191) but only ties BIO's flat rate. Recalibrated on the most recent training years, which fixed the overconfident top fifth.
-- **Next:** match approvals to their disease, de-duplicate disease rows, drug-level features, LightGBM, the other two transitions.
+- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. First baseline model (Phase 2 → 3) trained; after fixing two lookahead leaks it beats BIO's phase × area table (Brier 0.184 vs 0.191) but only ties BIO's flat rate. Recalibrated on the most recent training years, which fixed the overconfident top fifth. First pass at the mispricing watchlist, scored on pending programs.
+- **Next:** Purple Book for biologics (would also fix the label gap the watchlist ran into below), match approvals to their disease, de-duplicate disease rows, drug-level features, LightGBM, the other two transitions, the rNPV illustration.
 
 ## Label v1 vs BIO 2021
 
@@ -60,6 +60,24 @@ out-of-fold predictions from the 2011–2015 training cohort, the years closest 
 the top fifth in to ~33% predicted vs ~31% actual and tightened the gap across every bin, at a
 small Brier improvement (0.1842 → 0.1837). The table above already reflects the recalibrated model.
 
+## Mispricing watchlist
+
+`build_watchlist.py` refits the model on every labeled program (train + test, since there's no more
+held-out split to protect) and scores pending Phase 2 → 3 programs, ranking them by how far our
+probability diverges from BIO's disease-area rate. Of the 9,537 pending programs, only **1,901**
+have a resolved drug identity and a US site (`in_v1_label_set`) -- the same bar used everywhere
+else -- so only those are scored. Output: `output/model/watchlist_phase2_to_phase3.csv`.
+
+Before trusting a "mispriced" program, check its `reliable` column. Our own training-years rate
+runs well below BIO's in exactly the disease areas with the Drugs@FDA biologics gap described above
+(Hematology −16pp, Others −14pp, Gastroenterology −13pp, Ophthalmology −8pp, Infectious disease −6pp,
+Psychiatry and Urology also flagged) -- a large divergence there is likely that label gap showing up
+again, not real mispricing, so those rows are marked unreliable and excluded from the ranked list.
+The reliable watchlist shows the model both more optimistic than BIO (e.g. several oncology programs,
++13 to +16pp) and more pessimistic (metabolic programs, −13 to −16pp) -- a real, two-directional
+result, not a one-sided artifact. Fixing the label gap with the Purple Book should make more of the
+9,537 scoreable and may change which disease areas are trustworthy.
+
 ## How the label works
 
 Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
@@ -79,6 +97,7 @@ Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
 | `output/labels/` | Label table (`transitions.csv`), drug IDs per trial (`trial_drugs.csv`), comparison tables and `summary.json` |
 | `build_features.py` | Trial-design features from AACT |
 | `build_model.py` | Joins features to the labels, trains the baseline model |
+| `build_watchlist.py` | Scores pending programs for the mispricing watchlist |
 | `output/model/` | Feature table and the Phase 2 → 3 calibration plot |
 | `external/bio/bio2021_phase_transitions.csv` | BIO 2021 success rates |
 | `tests/` | Tests for the label code |
@@ -105,6 +124,7 @@ pip install -r requirements.txt
 python3 build_labels.py     # builds output/labels/ (~30 s)
 python3 build_features.py   # builds output/model/trial_design_features.csv
 python3 build_model.py      # trains the Phase 2 -> 3 baseline, writes output/model/calibration_phase2_to_phase3.png
+python3 build_watchlist.py  # scores pending programs, writes output/model/watchlist_phase2_to_phase3.csv
 python3 -m pytest           # tests (no data needed)
 ```
 

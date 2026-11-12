@@ -152,10 +152,11 @@ def make_model(kind: str) -> Pipeline:
         ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
         ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
     ])
-    # small, heavily-regularized LightGBM: ~4,700 training rows is little data for gradient boosting,
-    # so few leaves and a high min_child_samples keep it from just memorizing sponsor/trial quirks
+    # ~4,700 training rows is little data for gradient boosting; num_leaves=3, min_child_samples=40,
+    # n_estimators=100 chosen by 5-fold CV grid search on train only (CV Brier 0.1953 vs 0.1996 for
+    # an earlier hand-picked num_leaves=7) -- this small a dataset wants very shallow trees
     clf = (LogisticRegression(max_iter=1000) if kind == "logistic" else
-           LGBMClassifier(n_estimators=150, num_leaves=7, min_child_samples=40, learning_rate=0.05,
+           LGBMClassifier(n_estimators=100, num_leaves=3, min_child_samples=40, learning_rate=0.05,
                            reg_lambda=1.0, verbosity=-1))
     return Pipeline([("pre", pre), ("clf", clf)])
 

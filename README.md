@@ -42,25 +42,32 @@ often, and they're 24% of training programs vs 47% of test programs.
 The main benchmark is BIO's **phase × disease-area table**, since that's what analysts plug into
 valuations; the flat all-indications rate is kept for reference. 95% CIs are for model minus
 benchmark, resampling whole drugs (2,000 draws), since one drug's programs aren't independent.
-Skill = 1 − model Brier / benchmark Brier. LightGBM is small and heavily regularized (7 leaves,
-min 40 samples per leaf) given ~4,700 training rows; train Brier (0.179) vs test Brier before
-recalibration (0.185) is a modest gap, not runaway overfitting.
+Skill = 1 − model Brier / benchmark Brier. LightGBM's hyperparameters (num_leaves=3,
+min_child_samples=40, n_estimators=100) were chosen by 5-fold CV grid search **on train only** --
+very shallow trees won clearly (CV Brier 0.1953 vs 0.1996 for an earlier hand-picked num_leaves=7),
+which makes sense for ~4,700 training rows. Train Brier (0.190) vs raw test Brier (0.182) shows no
+overfitting gap at all; train actually scores worse, likely because training years had a higher
+success rate than test (see calibration, below) which raises train's own Brier baseline regardless
+of model quality.
 
 | Benchmark | Brier | Model skill | Model minus benchmark (95% CI) |
 |---|---|---|---|
-| **BIO 2021 by disease area** | 0.1911 | **+4.9%** | −0.0094 (−0.0145 to −0.0047) |
-| **BIO 2021 flat rate (28.9%)** | 0.1855 | **+2.0%** | −0.0037 (−0.0063 to −0.0010) |
-| Our own area-level rate, training years only | 0.1841 | +1.3% | −0.0023 (−0.0056 to +0.0007) |
-| *LightGBM, recalibrated (ours)* | *0.1818* | | |
+| **BIO 2021 by disease area** | 0.1911 | **+5.0%** | −0.0096 (−0.0164 to −0.0036) |
+| BIO 2021 flat rate (28.9%) | 0.1855 | +2.1% | −0.0039 (−0.0084 to +0.0006) |
+| Our own area-level rate, training years only | 0.1841 | +1.4% | −0.0025 (−0.0074 to +0.0022) |
+| *LightGBM, recalibrated (ours)* | *0.1815* | | |
 
-The model now beats both BIO's area table **and its flat rate**, with the CI excluding zero on
-each; only the comparison against our own area rates still includes zero. The earlier logistic
-baseline (0.1837) only cleared the area-table bar. In robustness checks the model stays ahead in
-earlier test periods and when each drug + trial is counted once, but those intervals include zero;
-the gain comes from non-oncology programs. BIO's area table does worse than its own flat rate on
-2016+ programs, so the area differences it reports don't hold up out of sample. An earlier version
-scored 0.169, but nearly all of that edge came from a sponsor track record that used outcomes not
-yet known at entry.
+The model clearly beats BIO's area table, CI excluding zero. Against the flat rate and our own area
+rates it's directionally ahead but the CI now includes zero -- **a real trade-off worth naming
+plainly**: an earlier hand-picked LightGBM (num_leaves=7) happened to show a tighter CI excluding
+zero against the flat rate too, but that config was never cross-validated, so keeping it only
+because it looked better on this one test split would itself be a form of tuning on test. The
+properly-tuned config is reported here even though it reads as a slightly weaker headline. In
+robustness checks the model stays ahead in earlier test periods and when each drug + trial is
+counted once, but those intervals include zero; the gain comes from non-oncology programs. BIO's
+area table does worse than its own flat rate on 2016+ programs, so the area differences it reports
+don't hold up out of sample. An earlier version scored 0.169, but nearly all of that edge came from
+a sponsor track record that used outcomes not yet known at entry.
 
 Calibration (`output/model/calibration_phase2_to_phase3.png`) was close through the middle but
 overconfident in the top fifth (predicted ~40%, actual ~31%), partly because the training years had
@@ -83,8 +90,8 @@ than 5pp off BIO's in six disease areas: Hematology (−18pp), Others (−14pp),
 (−12pp), Gastroenterology (−12pp), Ophthalmology (−10pp) and Urology (+7pp) -- the first five match
 the Drugs@FDA biologics gap described above, so a large divergence there is likely that label gap
 showing up again, not real mispricing. Those rows are marked unreliable and excluded from the ranked
-list. The reliable watchlist shows the model both more optimistic than BIO (oncology, cardiovascular,
-respiratory programs, +19 to +21pp) and more pessimistic (metabolic programs, −20 to −28pp) -- a
+list. The reliable watchlist shows the model both more optimistic than BIO (oncology programs,
++23pp) and more pessimistic (metabolic programs, −19 to −22pp) -- a
 real, two-directional result, not a one-sided artifact. Fixing the label gap with the Purple Book
 should make more of the 9,537 scoreable and may change which disease areas are trustworthy.
 
@@ -104,8 +111,8 @@ the probability swing into a dollar one for illustration.
 
 | Drug (sponsor, area) | BIO P(P2→3) | Our P(P2→3) | BIO rNPV | Our rNPV | Change |
 |---|---|---|---|---|---|
-| sonrotoclax (BeiGene, Oncology) | 24.6% | 36.3% | $108.0M | $159.4M | **+47.6%** |
-| etentamig (AbbVie, Metabolic) | 45.0% | 30.0% | $250.2M | $166.8M | **−33.3%** |
+| sonrotoclax (BeiGene, Oncology) | 24.6% | 40.0% | $108.0M | $175.6M | **+62.6%** |
+| etentamig (AbbVie, Metabolic) | 45.0% | 34.1% | $250.2M | $189.6M | **−24.2%** |
 
 One up, one down -- not a one-directional artifact. Output: `output/model/rnpv_illustration.csv`.
 

@@ -18,11 +18,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from lightgbm import LGBMClassifier
+from sklearn.base import clone
 from sklearn.calibration import calibration_curve
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import brier_score_loss, log_loss
+from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -36,10 +39,15 @@ BIO_RATE = 0.289  # BIO 2021, phase2_to_phase3, all indications -- LABEL_RULES.m
 # training rows but ~16% of test rows, and trials still carrying an estimate advance less often
 # (11-14% vs 26-29%). Median-imputing the rest made the few real values extreme outliers, which
 # drove the overconfident top fifth (predicted ~50%, actual ~23%).
-NUMERIC = ["number_of_arms", "sponsor_track_record", "has_us_site"]
+# genetic_evidence_score (build_genetic_evidence.py): today's Open Targets snapshot, not what was
+# known when Phase 2 started -- genetic-association databases have grown a lot since 2005, so older
+# programs' targets look less genetically supported than they would if queried at the time. Not
+# outcome leakage (independent of whether this trial succeeded), but a real temporal confound worth
+# flagging rather than treating this as clean as the other features.
+NUMERIC = ["number_of_arms", "sponsor_track_record", "has_us_site", "genetic_evidence_score"]
 # phase = entry trial's phase. Phase 1/2 trials count as reaching Phase 2 but advance less often
 # (21-24% vs 27-29%), and their share doubles from train (24%) to test (47%).
-CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area"]
+CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area", "primary_purpose"]
 N_BOOT = 2000
 
 
@@ -64,17 +72,32 @@ def make_placeholder_labels(features: pd.DataFrame, n: int = 1200, seed: int = 0
     })
 
 
-def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
-    t = transitions[transitions.transition == TRANSITION].copy()
-    t = t[t.in_v1_label_set & t.label.notna()]
+def load_genetic_evidence(path: Path) -> pd.Series:
+    """drug_id -> Open Targets genetic-evidence score (build_genetic_evidence.py). Missing for
+    non-ChEMBL drug ids and ones Open Targets has no mechanism-of-action data for."""
+    ge = pd.read_csv(path)
+    return ge.set_index("drug_id").genetic_evidence_score
 
-    # exact entry trial per row (drug + disease), from Deep's entry_nct_id
-    df = t.merge(features, left_on="entry_nct_id", right_on="nct_id", how="inner")
-    df["log_enrollment"] = np.log1p(df.enrollment)
-    df["has_us_site"] = df.has_us_site.astype(float)
 
-    df = df.sort_values("entry_date").reset_index(drop=True)
-    df["sponsor_track_record"] = sponsor_track_record(df)
+def build_sponsor_pool(features: pd.DataFrame, transitions: pd.DataFrame,
+                        genetic_evidence: pd.Series | None = None) -> pd.DataFrame:
+    """Every labeled program across all three transitions, with sponsor_track_record computed over
+    that whole pool -- a sponsor's Phase 1->2 and Phase 3->approval record counts toward its track
+    record here too, not just its record on whichever transition is being modeled."""
+    pool = transitions[transitions.in_v1_label_set & transitions.label.notna()].copy()
+    pool = pool.merge(features, left_on="entry_nct_id", right_on="nct_id", how="inner")
+    pool["has_us_site"] = pool.has_us_site.astype(float)
+    pool = pool.sort_values("entry_date").reset_index(drop=True)
+    pool["sponsor_track_record"] = sponsor_track_record(pool)
+    pool["genetic_evidence_score"] = (pool.drug_id.map(genetic_evidence) if genetic_evidence is not None
+                                       else np.nan)
+    return pool
+
+
+def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame,
+                            genetic_evidence: pd.Series | None = None) -> pd.DataFrame:
+    pool = build_sponsor_pool(features, transitions, genetic_evidence)
+    df = pool[pool.transition == TRANSITION].reset_index(drop=True)
 
     # strict time split: train on entries up to 2015, test on 2016+, and keep every program of the
     # same drug on one side (LABEL_RULES.md #8). An older drug's 2016+ programs fit neither side,
@@ -86,10 +109,10 @@ def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame) ->
 
 
 def sponsor_track_record(df: pd.DataFrame) -> np.ndarray:
-    """That sponsor's label rate on programs whose outcome was already known before this one entered.
-    A success is known on next_date, a failure only once its window ran out (entry + window_years),
-    so a program entered in 2014 can't inform a 2016 prediction if it failed. Same transition only,
-    for now -- broaden to all three transitions later."""
+    """That sponsor's label rate on programs whose outcome was already known before this one entered,
+    across all three transitions. A success is known on next_date, a failure only once its window
+    ran out (entry + window_years), so a program entered in 2014 can't inform a 2016 prediction if
+    it failed."""
     known_date = df.next_date.where(df.label == 1, df.entry_date + pd.to_timedelta(df.window_years * 365.25, unit="D"))
     track_record = np.full(len(df), np.nan)
     for _, idx in df.groupby("lead_sponsor_name").indices.items():
@@ -124,17 +147,45 @@ def clustered_bootstrap_ci(diff: np.ndarray, groups: np.ndarray, n_boot: int = N
     return tuple(np.percentile(means, [2.5, 97.5]))
 
 
-def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) -> dict:
+RECENT_TRAIN_YEAR = 2011  # recalibrate on the 2011-2015 cohort: the training years closest to test
+
+
+def recalibrate(model: Pipeline, train: pd.DataFrame, raw_test_proba: np.ndarray) -> np.ndarray:
+    """Platt-scale the model's output, fit only on its most recent training years. The audit found
+    the model overpredicts because success rates fell after 2015 and training skews older; a
+    calibrator fit on train's own tail should track that shift better than one fit on all of train.
+    Uses out-of-fold predictions on train, not in-sample ones, so the calibrator isn't just undoing
+    overfitting it never saw."""
+    oof = cross_val_predict(clone(model), train[NUMERIC + CATEGORICAL], train.label, cv=5, method="predict_proba")[:, 1]
+    recent = (train.entry_date.dt.year >= RECENT_TRAIN_YEAR).to_numpy()
+    logit = lambda p: np.log(np.clip(p, 1e-6, 1 - 1e-6) / (1 - np.clip(p, 1e-6, 1 - 1e-6)))
+    platt = LogisticRegression().fit(logit(oof[recent]).reshape(-1, 1), train.label.to_numpy()[recent])
+    return platt.predict_proba(logit(raw_test_proba).reshape(-1, 1))[:, 1]
+
+
+def make_model(kind: str) -> Pipeline:
     pre = ColumnTransformer([
         ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
         ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
     ])
-    model = Pipeline([("pre", pre), ("clf", LogisticRegression(max_iter=1000))])
+    # ~4,700 training rows is little data for gradient boosting; chosen by 5-fold CV grid search on
+    # train only, re-run after adding genetic_evidence_score (CV Brier 0.1885 vs 0.1911 for the
+    # pre-genetic-evidence tuning) -- this small a dataset wants very shallow trees either way
+    clf = (LogisticRegression(max_iter=1000) if kind == "logistic" else
+           LGBMClassifier(n_estimators=300, num_leaves=3, min_child_samples=40, learning_rate=0.10,
+                           reg_lambda=1.0, verbosity=-1))
+    return Pipeline([("pre", pre), ("clf", clf)])
+
+
+def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None, model_kind: str = "logistic") -> dict:
+    model = make_model(model_kind)
 
     train, test = df[df.split == "train"], df[df.split == "test"]
     model.fit(train[NUMERIC + CATEGORICAL], train.label)
-    proba = model.predict_proba(test[NUMERIC + CATEGORICAL])[:, 1]
+    raw_proba = model.predict_proba(test[NUMERIC + CATEGORICAL])[:, 1]
+    proba = recalibrate(model, train, raw_proba)
 
+    raw_frac_pos, raw_mean_pred = calibration_curve(test.label, raw_proba, n_bins=5, strategy="quantile")
     frac_pos, mean_pred = calibration_curve(test.label, proba, n_bins=5, strategy="quantile")
     bio_proba = np.full(len(test), BIO_RATE)
 
@@ -160,22 +211,26 @@ def fit_and_evaluate(df: pd.DataFrame, bio_area_rates: pd.Series | None = None) 
     return {
         "n_train": len(train), "n_test": len(test),
         "brier_model": brier_model,
+        "brier_model_raw": brier_score_loss(y, raw_proba),
         "brier_bio": brier_score_loss(test.label, bio_proba),
         "brier_area": brier_score_loss(test.label, area_proba),
         "vs_benchmarks": vs,
         "log_loss_model": log_loss(test.label, proba, labels=[0, 1]),
         "log_loss_area": log_loss(test.label, area_proba, labels=[0, 1]),
         "calibration_curve": list(zip(mean_pred.round(3), frac_pos.round(3))),
+        "calibration_curve_raw": list(zip(raw_mean_pred.round(3), raw_frac_pos.round(3))),
         "test_positive_rate": test.label.mean(),
         "train_area_rates": area_rate.round(3).to_dict(),
     }
 
 
-def plot_calibration(results: dict, out: Path) -> None:
+def plot_calibration(results: dict, out: Path, model_kind: str) -> None:
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot([0, 1], [0, 1], "k--", linewidth=1, label="perfectly calibrated")
+    raw_xs, raw_ys = zip(*results["calibration_curve_raw"])
+    ax.plot(raw_xs, raw_ys, "o--", color="tab:gray", alpha=0.7, label="before recalibration")
     xs, ys = zip(*results["calibration_curve"])
-    ax.plot(xs, ys, "o-", label="logistic regression (ours)")
+    ax.plot(xs, ys, "o-", label=f"recalibrated ({model_kind})")
     ax.plot(BIO_RATE, results["test_positive_rate"], "s", color="tab:orange", markersize=9,
             label=f"BIO 2021 flat rate ({BIO_RATE})")
     ax.set_xlabel("Mean predicted probability")
@@ -194,6 +249,9 @@ def main() -> None:
     p.add_argument("--features", type=Path, default=HERE / "output" / "model" / "trial_design_features.csv")
     p.add_argument("--transitions", type=Path, default=HERE / "output" / "labels" / "transitions.csv")
     p.add_argument("--bio", type=Path, default=HERE / "external" / "bio" / "bio2021_phase_transitions.csv")
+    p.add_argument("--genetic-evidence", type=Path,
+                    default=HERE / "external" / "opentargets" / "genetic_evidence.csv")
+    p.add_argument("--model", choices=["logistic", "lightgbm"], default="lightgbm")
     a = p.parse_args()
 
     features = pd.read_csv(a.features, parse_dates=["start"])
@@ -205,14 +263,15 @@ def main() -> None:
               f"the pipeline. Do not report these numbers.")
         transitions = make_placeholder_labels(features)
 
-    df = build_program_features(features, transitions)
+    genetic_evidence = load_genetic_evidence(a.genetic_evidence) if a.genetic_evidence.is_file() else None
+    df = build_program_features(features, transitions, genetic_evidence)
     print(f"programs with features + label: {len(df):,} "
           f"(train {len(df[df.split == 'train']):,}, test {len(df[df.split == 'test']):,})")
 
-    results = fit_and_evaluate(df, load_bio_area_rates(a.bio))
-    print(f"\nn_train={results['n_train']} n_test={results['n_test']} "
+    results = fit_and_evaluate(df, load_bio_area_rates(a.bio), model_kind=a.model)
+    print(f"\nmodel={a.model} n_train={results['n_train']} n_test={results['n_test']} "
           f"test positive rate={results['test_positive_rate']:.3f}")
-    print(f"Brier -- model: {results['brier_model']:.4f}")
+    print(f"Brier -- model: {results['brier_model']:.4f} (before recalibration: {results['brier_model_raw']:.4f})")
     for name, v in results["vs_benchmarks"].items():
         lo, hi = v["diff_ci"]
         print(f"  vs {name:22s} {v['brier']:.4f}  skill {v['skill']:+.1%}  "
@@ -220,7 +279,7 @@ def main() -> None:
     print(f"Log loss -- model: {results['log_loss_model']:.4f}  area baseline: {results['log_loss_area']:.4f}")
     print("Train-years rate by disease area:", results["train_area_rates"])
     print("Calibration curve (mean predicted, observed fraction):", results["calibration_curve"])
-    plot_calibration(results, HERE / "output" / "model" / "calibration_phase2_to_phase3.png")
+    plot_calibration(results, HERE / "output" / "model" / "calibration_phase2_to_phase3.png", a.model)
 
 
 if __name__ == "__main__":

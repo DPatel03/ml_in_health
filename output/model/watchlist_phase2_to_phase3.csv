@@ -1,0 +1,648 @@
+drug_name,mesh_term,disease_area,entry_date,entry_nct_id,our_probability,bio_area_rate,bio_flat_rate,divergence_vs_area,divergence_vs_flat,known_label_gap,reliable
+inz-701,Pseudoxanthoma Elasticum,Hematology,2022-04-11,NCT05030831,0.144,0.481,0.289,-0.337,-0.145,-0.194,False
+dibotatug,"Anemia, Aplastic",Hematology,2026-08-31,NCT07712562,0.144,0.481,0.289,-0.337,-0.145,-0.194,False
+evexomostat,Hyperglycemia,Metabolic,2022-08-26,NCT05455619,0.121,0.45,0.289,-0.329,-0.168,-0.152,False
+povetacicept,"Anemia, Hemolytic",Hematology,2023-07-03,NCT05757570,0.152,0.481,0.289,-0.329,-0.137,-0.194,False
+bezuclastinib,Hematologic Diseases,Hematology,2021-11-09,NCT04996875,0.162,0.481,0.289,-0.319,-0.127,-0.194,False
+evexomostat,Hyperinsulinism,Others,2022-08-26,NCT05455619,0.085,0.386,0.289,-0.301,-0.204,-0.212,False
+vlx-1005,Thrombocytopenia,Hematology,2023-09-26,NCT05785819,0.197,0.481,0.289,-0.284,-0.092,-0.194,False
+seclidemstat,"Histiocytoma, Angiomatoid Fibrous",Others,2022-01-15,NCT05266196,0.104,0.386,0.289,-0.282,-0.185,-0.212,False
+granaticin b,Recurrence,Others,2023-07-20,NCT05756322,0.105,0.386,0.289,-0.281,-0.184,-0.212,False
+dibotatug,Leukocyte Disorders,Others,2026-08-31,NCT07712562,0.105,0.386,0.289,-0.281,-0.184,-0.212,False
+inz-701,Arterial calcification of infancy,Others,2021-11-21,NCT04686175,0.105,0.386,0.289,-0.281,-0.184,-0.212,False
+orellanine,"Kidney Failure, Chronic",Others,2023-08-04,NCT05287945,0.106,0.386,0.289,-0.28,-0.183,-0.212,False
+rhenium re-186 obisbemeda,Pathologic Processes,Others,2025-07-02,NCT07098806,0.108,0.386,0.289,-0.278,-0.181,-0.212,False
+alintegimod,Turcot syndrome,Others,2024-08-23,NCT06362369,0.108,0.386,0.289,-0.278,-0.181,-0.212,False
+acloproxalap,Inflammation,Others,2022-04-07,NCT05392192,0.108,0.386,0.289,-0.278,-0.181,-0.212,False
+reproxalap,Alopecia Areata,Others,2025-03-24,NCT06826196,0.109,0.386,0.289,-0.277,-0.18,-0.212,False
+vonsetamig,"Renal Insufficiency, Chronic",Others,2022-08-02,NCT05092347,0.11,0.386,0.289,-0.276,-0.179,-0.212,False
+pociredir,"Anemia, Sickle Cell",Hematology,2026-03-30,NCT07401823,0.205,0.481,0.289,-0.276,-0.084,-0.194,False
+olatorepatide,Obesity,Metabolic,2026-03-16,NCT07431086,0.174,0.45,0.289,-0.276,-0.115,-0.152,False
+epeleuton,"Anemia, Sickle Cell",Hematology,2024-01-10,NCT05861453,0.205,0.481,0.289,-0.276,-0.084,-0.194,False
+povetacicept,Microscopic Polyangiitis,Others,2023-03-15,NCT05732402,0.111,0.386,0.289,-0.275,-0.178,-0.212,False
+tianeptine,Depression,Others,2023-03-02,NCT05686408,0.112,0.386,0.289,-0.274,-0.177,-0.212,False
+maplirpacept,Recurrence,Others,2023-08-04,NCT05626322,0.113,0.386,0.289,-0.273,-0.176,-0.212,False
+atumelnant,"ACTH Syndrome, Ectopic",Others,2023-10-12,NCT05804669,0.114,0.386,0.289,-0.272,-0.175,-0.212,False
+nu-3,Metabolic Diseases,Metabolic,2022-03-11,NCT05276401,0.182,0.45,0.289,-0.268,-0.107,-0.152,False
+invikafusp alfa,Microsatellite Instability,Others,2023-01-04,NCT05592626,0.12,0.386,0.289,-0.266,-0.169,-0.212,False
+zapnometinib,Glycogen Storage Disease,Others,2026-09-14,NCT07738107,0.12,0.386,0.289,-0.266,-0.169,-0.212,False
+neflamapimod,"Aphasia, Primary Progressive",Others,2025-10-02,NCT07033481,0.12,0.386,0.289,-0.266,-0.169,-0.212,False
+lutetium tezuvotidexetan,Prostatic Diseases,Others,2022-07-20,NCT05413850,0.121,0.386,0.289,-0.265,-0.168,-0.212,False
+emugrobart,Obesity,Metabolic,2025-05-05,NCT06965413,0.187,0.45,0.289,-0.263,-0.102,-0.152,False
+enzomenib,Recurrence,Others,2022-02-28,NCT04988555,0.125,0.386,0.289,-0.261,-0.164,-0.212,False
+tarperprumig,"Anemia, Sickle Cell",Hematology,2023-02-22,NCT05565092,0.221,0.481,0.289,-0.26,-0.068,-0.194,False
+etentamig,Amyloidosis,Metabolic,2024-04-01,NCT06158854,0.194,0.45,0.289,-0.256,-0.095,-0.152,False
+efpegerglucagon,Congenital Hyperinsulinism,Metabolic,2022-05-05,NCT04732416,0.195,0.45,0.289,-0.255,-0.094,-0.152,False
+vamifeport,Anemia,Hematology,2021-11-18,NCT04817670,0.227,0.481,0.289,-0.254,-0.062,-0.194,False
+nnz-2591,Telomeric 22q13 Monosomy Syndrome,Others,2022-08-08,NCT05025241,0.134,0.386,0.289,-0.252,-0.155,-0.212,False
+vonafexor,"Nephritis, Hereditary",Others,2024-08-01,NCT06425055,0.134,0.386,0.289,-0.252,-0.155,-0.212,False
+lifileucel,"Histiocytoma, Malignant Fibrous",Others,2026-10-02,NCT07741877,0.134,0.386,0.289,-0.252,-0.155,-0.212,False
+bezuclastinib,Immune Complex Diseases,Others,2021-11-09,NCT04996875,0.134,0.386,0.289,-0.252,-0.155,-0.212,False
+amlenetug,Pure Autonomic Failure,Others,2021-11-16,NCT05104476,0.135,0.386,0.289,-0.251,-0.154,-0.212,False
+enlicitide,Hypercholesterolemia,Metabolic,2022-03-10,NCT05261126,0.201,0.45,0.289,-0.249,-0.088,-0.152,False
+ifinatamab deruxtecan,Recurrence,Others,2024-04-10,NCT06330064,0.137,0.386,0.289,-0.249,-0.152,-0.212,False
+metopimazine,Obesity,Metabolic,2024-06-24,NCT06500429,0.202,0.45,0.289,-0.248,-0.087,-0.152,False
+belantamab,Recurrence,Others,2023-06-14,NCT05714839,0.138,0.386,0.289,-0.248,-0.151,-0.212,False
+nisotirostide,Obesity,Metabolic,2025-03-28,NCT06897475,0.205,0.45,0.289,-0.245,-0.084,-0.152,False
+stx-478,Breast Diseases,Others,2023-04-17,NCT05768139,0.141,0.386,0.289,-0.245,-0.148,-0.212,False
+muvalaplin,Dyslipidemias,Metabolic,2022-11-24,NCT05563246,0.205,0.45,0.289,-0.245,-0.084,-0.152,False
+tebapivat,Anemia,Hematology,2022-11-07,NCT05490446,0.236,0.481,0.289,-0.245,-0.053,-0.194,False
+aleniglipron,Obesity,Metabolic,2025-12-01,NCT07400588,0.206,0.45,0.289,-0.244,-0.083,-0.152,False
+olmesartan,Hypertension,Cardiovascular,2021-11-05,NCT05103332,0.454,0.21,0.289,0.244,0.165,0.03,True
+denatonium,Obesity,Metabolic,2021-11-15,NCT05121441,0.206,0.45,0.289,-0.244,-0.083,-0.152,False
+fulvestrant,Hyperglycemia,Metabolic,2022-04-06,NCT04899349,0.207,0.45,0.289,-0.243,-0.082,-0.152,False
+ic14,Arrhythmogenic Right Ventricular Dysplasia,Others,2024-03-29,NCT06275893,0.143,0.386,0.289,-0.243,-0.146,-0.212,False
+lotiglipron,Obesity,Metabolic,2022-10-27,NCT05579977,0.21,0.45,0.289,-0.24,-0.079,-0.152,False
+napazimone,Mitochondrial Diseases,Metabolic,2026-06-12,NCT07514338,0.211,0.45,0.289,-0.239,-0.078,-0.152,False
+nb-001,22q11 Deletion Syndrome,Others,2022-02-10,NCT05290493,0.148,0.386,0.289,-0.238,-0.141,-0.212,False
+olatorepatide,Body Weight,Others,2026-03-16,NCT07431086,0.151,0.386,0.289,-0.235,-0.138,-0.212,False
+alpelisib,Recurrence,Others,2021-12-07,NCT04997902,0.153,0.386,0.289,-0.233,-0.136,-0.212,False
+apitegromab,Obesity,Metabolic,2024-05-21,NCT06445075,0.217,0.45,0.289,-0.233,-0.072,-0.152,False
+fosigotifator,Leukoencephalopathies,Others,2023-03-13,NCT05757141,0.154,0.386,0.289,-0.232,-0.135,-0.212,False
+pemvidutide,Obesity,Metabolic,2022-03-31,NCT05295875,0.218,0.45,0.289,-0.232,-0.071,-0.152,False
+progerinin,Progeria,Metabolic,2025-01-13,NCT06775041,0.219,0.45,0.289,-0.231,-0.07,-0.152,False
+basmisanil,"Chromosome 15q, trisomy",Others,2022-12-16,NCT05307679,0.158,0.386,0.289,-0.228,-0.131,-0.212,False
+azelaprag,Obesity,Metabolic,2024-06-27,NCT06515418,0.223,0.45,0.289,-0.227,-0.066,-0.152,False
+taldefgrobep alfa,Obesity,Metabolic,2025-11-24,NCT07281495,0.223,0.45,0.289,-0.227,-0.066,-0.152,False
+rose-010,Obesity,Metabolic,2024-09-26,NCT06621017,0.223,0.45,0.289,-0.227,-0.066,-0.152,False
+nt-0796,Obesity,Metabolic,2025-05-08,NCT07055516,0.223,0.45,0.289,-0.227,-0.066,-0.152,False
+nu-3,Diabetic Angiopathies,Others,2022-03-11,NCT05276401,0.159,0.386,0.289,-0.227,-0.13,-0.212,False
+imdevimab,COVID-19,Infectious disease,2021-11-08,NCT05081388,0.159,0.384,0.289,-0.225,-0.13,-0.162,False
+ponsegromab,Anorexia,Others,2022-11-21,NCT05546476,0.162,0.386,0.289,-0.224,-0.127,-0.212,False
+pl-8177,Ulcer,Others,2022-09-15,NCT05466890,0.162,0.386,0.289,-0.224,-0.127,-0.212,False
+maridebart cafraglutide,Obesity,Metabolic,2023-01-18,NCT05669599,0.226,0.45,0.289,-0.224,-0.063,-0.152,False
+tradipitant,Obesity,Metabolic,2025-02-25,NCT06804603,0.227,0.45,0.289,-0.223,-0.062,-0.152,False
+flizasertib,Acute Kidney Injury,Others,2025-01-17,NCT06602453,0.164,0.386,0.289,-0.222,-0.125,-0.212,False
+vimseltinib,Bronchial Diseases,Others,2024-11-21,NCT06619561,0.166,0.386,0.289,-0.22,-0.123,-0.212,False
+palmidrol,Mast Cell Activation Syndrome,Others,2023-01-19,NCT05652907,0.167,0.386,0.289,-0.219,-0.122,-0.212,False
+solengepras,Nerve Degeneration,Others,2023-09-11,NCT06006247,0.167,0.386,0.289,-0.219,-0.122,-0.212,False
+verekitug,Nose Diseases,Others,2023-12-18,NCT06164704,0.167,0.386,0.289,-0.219,-0.122,-0.212,False
+rosnilimab,Alopecia Areata,Others,2021-12-22,NCT05205070,0.167,0.386,0.289,-0.219,-0.122,-0.212,False
+zemirciclib,Recurrence,Others,2021-12-15,NCT05140382,0.168,0.386,0.289,-0.218,-0.121,-0.212,False
+clazakizumab,Obesity,Metabolic,2026-08-27,NCT07783802,0.232,0.45,0.289,-0.218,-0.057,-0.152,False
+rezpegaldesleukin,Alopecia Areata,Others,2024-04-02,NCT06340360,0.168,0.386,0.289,-0.218,-0.121,-0.212,False
+zelatriazin,Anhedonia,Others,2021-11-30,NCT05165394,0.169,0.386,0.289,-0.217,-0.12,-0.212,False
+gilteritinib,Recurrence,Others,2022-02-28,NCT04988555,0.17,0.386,0.289,-0.216,-0.119,-0.212,False
+budoprutug,"Glomerulosclerosis, Focal Segmental",Others,2022-05-03,NCT05441826,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+darovasertib,"Plaque, Amyloid",Others,2023-07-03,NCT05907954,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+oxylanthanum carbonate,"Kidney Failure, Chronic",Others,2023-12-15,NCT06218290,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+rilzabrutinib,"Glomerulosclerosis, Focal Segmental",Others,2024-12-19,NCT06500702,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+bempikibart,Alopecia,Others,2023-09-12,NCT06018428,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+iluzanebart,Hereditary Diffuse Leukoencephalopathy with Spheroids,Others,2022-12-14,NCT05677659,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+delpacibart braxlosiran,Facioscapulohumeral Muscular Dystrophy 1B,Others,2024-07-25,NCT06547216,0.171,0.386,0.289,-0.215,-0.118,-0.212,False
+hemopexin (human),"Anemia, Sickle Cell",Hematology,2025-07-10,NCT06699849,0.266,0.481,0.289,-0.215,-0.023,-0.194,False
+mazdutide,Overnutrition,Others,2023-11-17,NCT06124807,0.172,0.386,0.289,-0.214,-0.117,-0.212,False
+satralizumab,"Fractures, Bone",Others,2025-04-04,NCT06450639,0.172,0.386,0.289,-0.214,-0.117,-0.212,False
+arlocabtagene autoleucel,Recurrence,Others,2024-03-21,NCT06297226,0.172,0.386,0.289,-0.214,-0.117,-0.212,False
+brivekimig,"Glomerulosclerosis, Focal Segmental",Others,2024-12-19,NCT06500702,0.173,0.386,0.289,-0.213,-0.116,-0.212,False
+acasunlimab,Recurrence,Others,2025-07-25,NCT06984328,0.173,0.386,0.289,-0.213,-0.116,-0.212,False
+frexalimab,"Glomerulosclerosis, Focal Segmental",Others,2024-12-19,NCT06500702,0.173,0.386,0.289,-0.213,-0.116,-0.212,False
+zilurgisertib,Myositis Ossificans,Others,2022-05-05,NCT05090891,0.175,0.386,0.289,-0.211,-0.114,-0.212,False
+zagociguat,"Acidosis, Lactic",Others,2024-09-10,NCT06402123,0.175,0.386,0.289,-0.211,-0.114,-0.212,False
+isuzinaxib,Acute Kidney Injury,Others,2023-12-27,NCT05758896,0.176,0.386,0.289,-0.21,-0.113,-0.212,False
+ixoberogene soroparvovec,Blindness,Others,2022-08-23,NCT05536973,0.176,0.386,0.289,-0.21,-0.113,-0.212,False
+mavorixafor,Neutropenia,Hematology,2021-10-16,NCT04154488,0.272,0.481,0.289,-0.209,-0.017,-0.194,False
+amlitelimab,Celiac Disease,Metabolic,2024-08-29,NCT06557772,0.241,0.45,0.289,-0.209,-0.048,-0.152,False
+capivasertib,Recurrence,Others,2021-11-03,NCT05008055,0.178,0.386,0.289,-0.208,-0.111,-0.212,False
+sonrotoclax,Recurrence,Others,2024-11-27,NCT06634589,0.178,0.386,0.289,-0.208,-0.111,-0.212,False
+votoplam,Rare Diseases,Others,2022-06-03,NCT05358717,0.179,0.386,0.289,-0.207,-0.11,-0.212,False
+baxdrostat,"Renal Insufficiency, Chronic",Others,2022-04-29,NCT05432167,0.179,0.386,0.289,-0.207,-0.11,-0.212,False
+volenrelaxin,"Renal Insufficiency, Chronic",Others,2024-10-31,NCT06598631,0.179,0.386,0.289,-0.207,-0.11,-0.212,False
+enobosarm,Obesity,Metabolic,2024-04-29,NCT06282458,0.243,0.45,0.289,-0.207,-0.046,-0.152,False
+eltrekibart,Colitis,Others,2024-10-10,NCT06598943,0.179,0.386,0.289,-0.207,-0.11,-0.212,False
+galvokimig,"Bronchitis, Chronic",Infectious disease,2026-07-27,NCT07725939,0.178,0.384,0.289,-0.206,-0.111,-0.162,False
+zasocitinib,Hidradenitis Suppurativa,Infectious disease,2026-01-26,NCT07244263,0.178,0.384,0.289,-0.206,-0.111,-0.162,False
+aleniglipron,Weight Loss,Others,2025-12-01,NCT07400588,0.181,0.386,0.289,-0.205,-0.108,-0.212,False
+foselutoclax,Edema,Others,2023-08-23,NCT06011798,0.181,0.386,0.289,-0.205,-0.108,-0.212,False
+denatonium,Body Weight,Others,2021-11-15,NCT05121441,0.181,0.386,0.289,-0.205,-0.108,-0.212,False
+bezisterim,Fatigue,Others,2025-04-29,NCT06847191,0.181,0.386,0.289,-0.205,-0.108,-0.212,False
+ompekimig,Eczema,Others,2023-08-22,NCT05995964,0.183,0.386,0.289,-0.203,-0.106,-0.212,False
+empasiprubart,Delayed Graft Function,Others,2024-02-17,NCT05907096,0.183,0.386,0.289,-0.203,-0.106,-0.212,False
+rapcabtagene autoleucel,"Scleroderma, Diffuse",Others,2024-10-29,NCT06655896,0.183,0.386,0.289,-0.203,-0.106,-0.212,False
+tilrekimig,Eczema,Others,2023-08-22,NCT05995964,0.183,0.386,0.289,-0.203,-0.106,-0.212,False
+aspacytarabine,Recurrence,Others,2021-11-14,NCT04749355,0.184,0.386,0.289,-0.202,-0.105,-0.212,False
+dostarlimab,Hepatoblastoma,Others,2025-03-06,NCT06521567,0.185,0.386,0.289,-0.201,-0.104,-0.212,False
+verekitug,Sinusitis,Infectious disease,2023-12-18,NCT06164704,0.184,0.384,0.289,-0.2,-0.105,-0.162,False
+tonabersat,Post-Acute COVID-19 Syndrome,Infectious disease,2024-03-12,NCT06437223,0.184,0.384,0.289,-0.2,-0.105,-0.162,False
+pomotrelvir,COVID-19,Infectious disease,2022-09-21,NCT05543707,0.184,0.384,0.289,-0.2,-0.105,-0.162,False
+taladegib,"Adenoma, Islet Cell",Others,2022-05-24,NCT05199584,0.186,0.386,0.289,-0.2,-0.103,-0.212,False
+mibavademab,Amenorrhea,Others,2026-03-11,NCT07235917,0.187,0.386,0.289,-0.199,-0.102,-0.212,False
+gozetotide,Renal Insufficiency,Others,2024-04-04,NCT06004661,0.187,0.386,0.289,-0.199,-0.102,-0.212,False
+zunsemetinib,Hidradenitis Suppurativa,Infectious disease,2021-12-29,NCT05216224,0.187,0.384,0.289,-0.197,-0.102,-0.162,False
+daxdilimab,Alopecia Areata,Others,2022-04-27,NCT05368103,0.19,0.386,0.289,-0.196,-0.099,-0.212,False
+pembrolizumab,Adenoviridae Infections,Infectious disease,2022-05-17,NCT05271318,0.189,0.384,0.289,-0.195,-0.1,-0.162,False
+evinacumab,Renal Insufficiency,Others,2026-01-09,NCT07271186,0.191,0.386,0.289,-0.195,-0.098,-0.212,False
+petrelintide,Obesity,Metabolic,2024-12-09,NCT06662539,0.255,0.45,0.289,-0.195,-0.034,-0.152,False
+brivekimig,Hidradenitis Suppurativa,Infectious disease,2025-11-06,NCT07170917,0.191,0.384,0.289,-0.193,-0.098,-0.162,False
+glofitamab,Recurrence,Others,2022-11-16,NCT05533775,0.194,0.386,0.289,-0.192,-0.095,-0.212,False
+ibuzatrelvir,COVID-19,Infectious disease,2023-05-23,NCT05799495,0.193,0.384,0.289,-0.191,-0.096,-0.162,False
+surovatamig,Recurrence,Others,2024-11-27,NCT06526793,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+denrakibart,Musculoskeletal Diseases,Others,2023-09-13,NCT05838742,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+cagrilintide,"Renal Insufficiency, Chronic",Others,2024-04-01,NCT06131372,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+pbt-434,Movement Disorders,Others,2022-07-01,NCT05109091,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+envucitinib,Connective Tissue Diseases,Others,2023-06-26,NCT05966480,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+ulixacaltamide,Movement Disorders,Others,2021-10-14,NCT05021991,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+rose-010,Anorexia,Others,2024-09-26,NCT06621017,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+vimnerixin,Hidradenitis Suppurativa,Infectious disease,2022-07-18,NCT05348681,0.194,0.384,0.289,-0.19,-0.095,-0.162,False
+certepetide,Disease Progression,Others,2023-05-13,NCT05712356,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+orismilast,Skin Diseases,Others,2021-12-30,NCT05190419,0.196,0.386,0.289,-0.19,-0.093,-0.212,False
+invopressin,Acute Kidney Injury,Others,2022-04-28,NCT05309200,0.198,0.386,0.289,-0.188,-0.091,-0.212,False
+amlitelimab,Eczema,Others,2021-12-13,NCT05131477,0.198,0.386,0.289,-0.188,-0.091,-0.212,False
+fosgonimeton,"Deafness, Autosomal Recessive 39",Others,2022-01-20,NCT04831281,0.199,0.386,0.289,-0.187,-0.09,-0.212,False
+vimseltinib,Bronchiolitis,Infectious disease,2024-11-21,NCT06619561,0.197,0.384,0.289,-0.187,-0.092,-0.162,False
+lonafarnib,Progeria,Metabolic,2025-01-13,NCT06775041,0.263,0.45,0.289,-0.187,-0.026,-0.152,False
+fidrisertib,Myositis Ossificans,Others,2021-12-01,NCT05039515,0.199,0.386,0.289,-0.187,-0.09,-0.212,False
+isuzinaxib,COVID-19,Infectious disease,2021-10-20,NCT04880109,0.199,0.384,0.289,-0.185,-0.09,-0.162,False
+izokibep,Hidradenitis Suppurativa,Infectious disease,2022-05-05,NCT05355805,0.199,0.384,0.289,-0.185,-0.09,-0.162,False
+bezisterim,COVID-19,Infectious disease,2025-04-29,NCT06847191,0.199,0.384,0.289,-0.185,-0.09,-0.162,False
+kt-474,Hidradenitis Suppurativa,Infectious disease,2023-09-29,NCT06028230,0.2,0.384,0.289,-0.184,-0.089,-0.162,False
+lxe-408,Chagas Disease,Infectious disease,2025-04-28,NCT06632600,0.2,0.384,0.289,-0.184,-0.089,-0.162,False
+varespladib,Snake Bites,Others,2023-05-30,NCT05717062,0.203,0.386,0.289,-0.183,-0.086,-0.212,False
+miransertib,Proteus Infections,Infectious disease,2021-11-02,NCT04980872,0.203,0.384,0.289,-0.181,-0.086,-0.162,False
+cravacitinib,Alopecia Areata,Others,2022-11-08,NCT05556265,0.206,0.386,0.289,-0.18,-0.083,-0.212,False
+alpelisib,Hyperglycemia,Metabolic,2022-04-06,NCT04899349,0.272,0.45,0.289,-0.178,-0.017,-0.152,False
+camoteskimab,Dermatitis,Others,2024-05-01,NCT06436183,0.208,0.386,0.289,-0.178,-0.081,-0.212,False
+yh-001,Chondrosarcoma,Oncology,2022-11-14,NCT05448820,0.423,0.246,0.289,0.177,0.134,0.01,True
+idrebormilast,Eczema,Others,2022-09-26,NCT05375955,0.209,0.386,0.289,-0.177,-0.08,-0.212,False
+sitocabnagene loxiveleucel,Recurrence,Others,2021-11-12,NCT05020015,0.21,0.386,0.289,-0.176,-0.079,-0.212,False
+quercetin,"Arthritis, Rheumatoid",Autoimmune,2025-10-23,NCT07221565,0.138,0.314,0.289,-0.176,-0.151,-0.025,True
+ritlecitinib,Hidradenitis Suppurativa,Infectious disease,2025-11-13,NCT07228390,0.209,0.384,0.289,-0.175,-0.08,-0.162,False
+bitopertin,"Protoporphyria, Erythropoietic",Metabolic,2022-10-31,NCT05308472,0.276,0.45,0.289,-0.174,-0.013,-0.152,False
+cobolimab,Hepatoblastoma,Others,2025-03-06,NCT06521567,0.213,0.386,0.289,-0.173,-0.076,-0.212,False
+mitiperstat,Fatty Liver,Gastroenterology,2022-10-26,NCT05638737,0.169,0.342,0.289,-0.173,-0.12,-0.156,False
+zamaglutenase,Celiac Disease,Metabolic,2022-06-30,NCT05353985,0.279,0.45,0.289,-0.171,-0.01,-0.152,False
+vixarelimab,Gastrointestinal Diseases,Gastroenterology,2024-05-01,NCT06137183,0.172,0.342,0.289,-0.17,-0.117,-0.156,False
+osavampator,Depression,Others,2022-02-21,NCT05203341,0.216,0.386,0.289,-0.17,-0.073,-0.212,False
+povetacicept,Anti-Neutrophil Cytoplasmic Antibody-Associated Vasculitis,Autoimmune,2023-03-15,NCT05732402,0.145,0.314,0.289,-0.169,-0.144,-0.025,True
+sonavibart,"Influenza, Human",Infectious disease,2022-10-30,NCT05567783,0.215,0.384,0.289,-0.169,-0.074,-0.162,False
+temanogrel,"Scleroderma, Systemic",Others,2021-11-03,NCT04915950,0.218,0.386,0.289,-0.168,-0.071,-0.212,False
+ulotaront,Depression,Others,2022-11-09,NCT05593029,0.219,0.386,0.289,-0.167,-0.07,-0.212,False
+brensocatib,Hidradenitis Suppurativa,Infectious disease,2024-12-16,NCT06685835,0.219,0.384,0.289,-0.165,-0.07,-0.162,False
+bremelanotide,Kidney Diseases,Others,2022-12-26,NCT05709444,0.221,0.386,0.289,-0.165,-0.068,-0.212,False
+mivavotinib,Recurrence,Others,2022-06-23,NCT05319028,0.222,0.386,0.289,-0.164,-0.067,-0.212,False
+zegruvirimat,HIV Infections,Infectious disease,2023-12-21,NCT06061081,0.22,0.384,0.289,-0.164,-0.069,-0.162,False
+vimseltinib,Liver Diseases,Gastroenterology,2024-11-21,NCT06619561,0.179,0.342,0.289,-0.163,-0.11,-0.156,False
+vicadrostat,"Renal Insufficiency, Chronic",Others,2022-01-11,NCT05182840,0.223,0.386,0.289,-0.163,-0.066,-0.212,False
+artesunate,Cytomegalovirus Infections,Infectious disease,2025-08-01,NCT06853184,0.221,0.384,0.289,-0.163,-0.068,-0.162,False
+eltrekibart,Colonic Diseases,Gastroenterology,2024-10-10,NCT06598943,0.179,0.342,0.289,-0.163,-0.11,-0.156,False
+eloralintide,Overnutrition,Others,2024-02-05,NCT06230523,0.225,0.386,0.289,-0.161,-0.064,-0.212,False
+ixoberogene soroparvovec,Choroidal Neovascularization,Ophthalmology,2022-08-23,NCT05536973,0.194,0.355,0.289,-0.161,-0.095,-0.089,False
+avapritinib,Recurrence,Others,2022-02-24,NCT04773782,0.225,0.386,0.289,-0.161,-0.064,-0.212,False
+vipivotide tetraxetan lutetium,Renal Insufficiency,Others,2024-04-04,NCT06004661,0.225,0.386,0.289,-0.161,-0.064,-0.212,False
+famzeretcel,Retinitis Pigmentosa,Ophthalmology,2025-06-20,NCT06912633,0.194,0.355,0.289,-0.161,-0.095,-0.089,False
+infigratinib,Mucopolysaccharidosis IV,Metabolic,2021-12-06,NCT05145010,0.29,0.45,0.289,-0.16,0.001,-0.152,False
+serabelisib,Genital Diseases,Others,2024-12-12,NCT06463028,0.227,0.386,0.289,-0.159,-0.062,-0.212,False
+pacibekitug,Exophthalmos,Others,2024-02-19,NCT06088979,0.227,0.386,0.289,-0.159,-0.062,-0.212,False
+envafolimab,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2022-11-14,NCT05448820,0.425,0.266,0.289,0.159,0.136,0.021,True
+enpatoran,Polymyositis,Others,2023-01-19,NCT05650567,0.227,0.386,0.289,-0.159,-0.062,-0.212,False
+barzolvolimab,Eczema,Others,2024-12-18,NCT06727552,0.228,0.386,0.289,-0.158,-0.061,-0.212,False
+lonigutamab,Graves Ophthalmopathy,Autoimmune,2023-02-14,NCT05683496,0.156,0.314,0.289,-0.158,-0.133,-0.025,True
+hemopexin (human),Acute Chest Syndrome,Others,2025-07-10,NCT06699849,0.228,0.386,0.289,-0.158,-0.061,-0.212,False
+pacritinib,VEXAS syndrome,Others,2025-05-28,NCT06782373,0.228,0.386,0.289,-0.158,-0.061,-0.212,False
+ruzasvir,Liver Cirrhosis,Gastroenterology,2023-05-30,NCT05904470,0.184,0.342,0.289,-0.158,-0.105,-0.156,False
+soquelitinib,Eczema,Others,2026-02-28,NCT07441395,0.228,0.386,0.289,-0.158,-0.061,-0.212,False
+bemnifosbuvir,Liver Cirrhosis,Gastroenterology,2023-05-30,NCT05904470,0.184,0.342,0.289,-0.158,-0.105,-0.156,False
+disitamab vedotin,"Carcinoma, Transitional Cell",Oncology,2022-05-03,NCT04879329,0.403,0.246,0.289,0.157,0.114,0.01,True
+foselutoclax,Diabetic Retinopathy,Ophthalmology,2023-08-23,NCT06011798,0.199,0.355,0.289,-0.156,-0.09,-0.089,False
+nimacimab,Obesity,Metabolic,2024-08-22,NCT06577090,0.296,0.45,0.289,-0.154,0.007,-0.152,False
+briquilimab,Chronic Urticaria,Allergy,2023-11-29,NCT06162728,0.13,0.283,0.289,-0.153,-0.159,-0.059,False
+peresolimab,Arthritis,Others,2022-08-31,NCT05516758,0.233,0.386,0.289,-0.153,-0.056,-0.212,False
+belantamab mafodotin,Amyloidosis,Metabolic,2026-06-24,NCT07224672,0.298,0.45,0.289,-0.152,0.009,-0.152,False
+efgartigimod alfa,Postural Orthostatic Tachycardia Syndrome,Others,2022-09-23,NCT05633407,0.234,0.386,0.289,-0.152,-0.055,-0.212,False
+iptacopan,Geographic Atrophy,Ophthalmology,2022-02-17,NCT05230537,0.206,0.355,0.289,-0.149,-0.083,-0.089,False
+garetosmab,Obesity,Metabolic,2024-03-13,NCT06299098,0.301,0.45,0.289,-0.149,0.012,-0.152,False
+trevogrumab,Obesity,Metabolic,2024-03-13,NCT06299098,0.301,0.45,0.289,-0.149,0.012,-0.152,False
+afimkibart,Crohn Disease,Autoimmune,2023-07-24,NCT05910528,0.165,0.314,0.289,-0.149,-0.124,-0.025,True
+azetukalner,Depression,Others,2022-05-19,NCT05376150,0.237,0.386,0.289,-0.149,-0.052,-0.212,False
+enekinragene inzadenovec,Osteoarthritis,Others,2025-02-26,NCT06884865,0.238,0.386,0.289,-0.148,-0.051,-0.212,False
+ecnoglutide,Weight Loss,Others,2025-11-25,NCT07281937,0.238,0.386,0.289,-0.148,-0.051,-0.212,False
+hpg-1860,Non-alcoholic Fatty Liver Disease,Gastroenterology,2021-11-22,NCT05338034,0.196,0.342,0.289,-0.146,-0.093,-0.156,False
+pemvidutide,Non-alcoholic Fatty Liver Disease,Gastroenterology,2023-07-27,NCT05989711,0.196,0.342,0.289,-0.146,-0.093,-0.156,False
+invopressin,Hepatorenal Syndrome,Gastroenterology,2022-04-28,NCT05309200,0.197,0.342,0.289,-0.145,-0.092,-0.156,False
+tianeptine,Depressive Disorder,Psychiatry,2023-03-02,NCT05686408,0.125,0.268,0.289,-0.143,-0.164,-0.056,False
+brivekimig,"Diabetes Mellitus, Type 1",Autoimmune,2025-02-28,NCT06812988,0.171,0.314,0.289,-0.143,-0.118,-0.025,True
+bitopertin,Porphyrias,Others,2022-10-31,NCT05308472,0.244,0.386,0.289,-0.142,-0.045,-0.212,False
+lutikizumab,"Colitis, Ulcerative",Autoimmune,2024-03-23,NCT06257875,0.455,0.314,0.289,0.141,0.166,-0.025,True
+sitagliptin,Non-alcoholic Fatty Liver Disease,Gastroenterology,2023-09-14,NCT06054815,0.201,0.342,0.289,-0.141,-0.088,-0.156,False
+afimetoran,Connective Tissue Diseases,Others,2021-10-11,NCT04895696,0.248,0.386,0.289,-0.138,-0.041,-0.212,False
+praliciguat,"Glomerulosclerosis, Focal Segmental",Others,2025-12-03,NCT07268638,0.248,0.386,0.289,-0.138,-0.041,-0.212,False
+avenciguat,Liver Diseases,Gastroenterology,2022-06-28,NCT05282121,0.204,0.342,0.289,-0.138,-0.085,-0.156,False
+neflamapimod,Aphasia,Neurology,2025-10-02,NCT07033481,0.134,0.268,0.289,-0.134,-0.155,-0.051,False
+zetomipzomib,"Hepatitis, Autoimmune",Infectious disease,2023-05-23,NCT05569759,0.25,0.384,0.289,-0.134,-0.039,-0.162,False
+ebselen,COVID-19,Infectious disease,2021-10-12,NCT04484025,0.25,0.384,0.289,-0.134,-0.039,-0.162,False
+aspirin trelamine,COVID-19,Infectious disease,2022-05-10,NCT05212818,0.25,0.384,0.289,-0.134,-0.039,-0.162,False
+ezobresib,Multiple Myeloma,Oncology,2022-10-18,NCT05372354,0.379,0.246,0.289,0.133,0.09,0.01,True
+bcg live,Carcinoma in Situ,Oncology,2025-03-11,NCT06833073,0.378,0.246,0.289,0.132,0.089,0.01,True
+saposin c (non-glycosylated),Colorectal Neoplasms,Oncology,2023-01-09,NCT05322590,0.114,0.246,0.289,-0.132,-0.175,0.01,True
+nusinersen,Neuromuscular Manifestations,Others,2025-09-15,NCT07047144,0.254,0.386,0.289,-0.132,-0.035,-0.212,False
+risdiplam,Neuromuscular Manifestations,Others,2025-09-15,NCT07047144,0.254,0.386,0.289,-0.132,-0.035,-0.212,False
+acimtamig,Recurrence,Others,2023-10-10,NCT05883449,0.255,0.386,0.289,-0.131,-0.034,-0.212,False
+edecesertib,"Lupus Erythematosus, Cutaneous",Autoimmune,2023-04-17,NCT05629208,0.184,0.314,0.289,-0.13,-0.105,-0.025,True
+izokibep,Uveitis,Ophthalmology,2022-01-06,NCT04706741,0.225,0.355,0.289,-0.13,-0.064,-0.089,False
+onc-206,Paraganglioma,Oncology,2026-01-02,NCT07282587,0.375,0.246,0.289,0.129,0.086,0.01,True
+ropanicant,Depression,Others,2024-02-05,NCT06126497,0.257,0.386,0.289,-0.129,-0.032,-0.212,False
+ggti-2418,Recurrence,Others,2025-03-28,NCT06854653,0.257,0.386,0.289,-0.129,-0.032,-0.212,False
+tibulizumab,Immune System Diseases,Others,2025-02-06,NCT06843239,0.258,0.386,0.289,-0.128,-0.031,-0.212,False
+efgartigimod alfa,Post-Acute COVID-19 Syndrome,Infectious disease,2022-09-23,NCT05633407,0.256,0.384,0.289,-0.128,-0.033,-0.162,False
+certolizumab,"Arthritis, Rheumatoid",Autoimmune,2023-08-15,NCT06028438,0.187,0.314,0.289,-0.127,-0.102,-0.025,True
+pl-8177,"Colitis, Ulcerative",Autoimmune,2022-09-15,NCT05466890,0.188,0.314,0.289,-0.126,-0.101,-0.025,True
+londamocitinib,Asthma,Allergy,2023-11-16,NCT06020014,0.157,0.283,0.289,-0.126,-0.132,-0.059,False
+cannabidiolic acid,Restless Legs Syndrome,Psychiatry,2024-03-01,NCT06570941,0.142,0.268,0.289,-0.126,-0.147,-0.056,False
+methylone,"Stress Disorders, Post-Traumatic",Psychiatry,2023-03-01,NCT05741710,0.142,0.268,0.289,-0.126,-0.147,-0.056,False
+pantoprazole,"Anemia, Sickle Cell",Hematology,2024-07-17,NCT06481306,0.356,0.481,0.289,-0.125,0.067,-0.194,False
+plamotamab,"Pyloric Stenosis, Hypertrophic",Gastroenterology,2022-04-15,NCT05328102,0.219,0.342,0.289,-0.123,-0.07,-0.156,False
+bezuclastinib,Hypersensitivity,Allergy,2021-11-09,NCT04996875,0.16,0.283,0.289,-0.123,-0.129,-0.059,False
+imeroprubart,"Polyradiculoneuropathy, Chronic Inflammatory Demyelinating",Autoimmune,2025-03-18,NCT07032662,0.191,0.314,0.289,-0.123,-0.098,-0.025,True
+acloproxalap,"Dermatitis, Atopic",Allergy,2023-02-15,NCT05717920,0.16,0.283,0.289,-0.123,-0.129,-0.059,False
+venanprubart,Autoimmune Diseases,Autoimmune,2022-03-07,NCT05123586,0.192,0.314,0.289,-0.122,-0.097,-0.025,True
+vlx-1005,"Purpura, Thrombocytopenic, Idiopathic",Autoimmune,2023-09-26,NCT05785819,0.193,0.314,0.289,-0.121,-0.096,-0.025,True
+praliciguat,Proteinuria,Urology,2025-12-03,NCT07268638,0.271,0.15,0.289,0.121,-0.018,0.022,True
+mgd-010,"Lupus Erythematosus, Systemic",Autoimmune,2022-01-20,NCT05087628,0.193,0.314,0.289,-0.121,-0.096,-0.025,True
+duvakitug,"Colitis, Ulcerative",Autoimmune,2022-09-30,NCT05499130,0.435,0.314,0.289,0.121,0.146,-0.025,True
+navenibart,Angioedema,Allergy,2023-02-21,NCT05695248,0.163,0.283,0.289,-0.12,-0.126,-0.059,False
+amlenetug,Multiple System Atrophy,Neurology,2021-11-16,NCT05104476,0.149,0.268,0.289,-0.119,-0.14,-0.051,False
+tipelukast,"Diabetes Mellitus, Type 2",Endocrine,2022-08-22,NCT05464784,0.147,0.266,0.289,-0.119,-0.142,0.021,True
+vamifeport,Hemochromatosis,Metabolic,2026-01-22,NCT07332091,0.333,0.45,0.289,-0.117,0.044,-0.152,False
+utreloxastat,Amyotrophic Lateral Sclerosis,Neurology,2022-05-15,NCT05349721,0.151,0.268,0.289,-0.117,-0.138,-0.051,False
+amelenodor,"Colitis, Ulcerative",Autoimmune,2023-04-24,NCT05785715,0.2,0.314,0.289,-0.114,-0.089,-0.025,True
+tilpisertib fosmecarbil,"Colitis, Ulcerative",Autoimmune,2023-12-05,NCT06029972,0.2,0.314,0.289,-0.114,-0.089,-0.025,True
+cln-081,Lung Diseases,Respiratory,2023-07-31,NCT05967689,0.333,0.219,0.289,0.114,0.044,-0.037,True
+vixarelimab,"Colitis, Ulcerative",Autoimmune,2024-05-01,NCT06137183,0.2,0.314,0.289,-0.114,-0.089,-0.025,True
+zasocitinib,"Arthritis, Psoriatic",Autoimmune,2022-01-06,NCT05153148,0.201,0.314,0.289,-0.113,-0.088,-0.025,True
+acloproxalap,Chronic Cough,Respiratory,2022-04-07,NCT05392192,0.108,0.219,0.289,-0.111,-0.181,-0.037,True
+anumigilimab,Anemia,Hematology,2026-02-02,NCT07224360,0.37,0.481,0.289,-0.111,0.081,-0.194,False
+icovamenib,Diabetes Mellitus,Endocrine,2022-08-17,NCT05731544,0.155,0.266,0.289,-0.111,-0.134,0.021,True
+hypericin,Psoriasis,Autoimmune,2022-12-14,NCT05442190,0.203,0.314,0.289,-0.111,-0.086,-0.025,True
+transcrocetin,"Lung Diseases, Interstitial",Respiratory,2021-12-02,NCT05079126,0.109,0.219,0.289,-0.11,-0.18,-0.037,True
+ifetroban,Idiopathic Pulmonary Fibrosis,Respiratory,2024-01-31,NCT05571059,0.109,0.219,0.289,-0.11,-0.18,-0.037,True
+darolutamide,"Bulbo-Spinal Atrophy, X-Linked",Neurology,2026-01-13,NCT07190300,0.158,0.268,0.289,-0.11,-0.131,-0.051,False
+garadacimab,Idiopathic Pulmonary Fibrosis,Respiratory,2022-02-03,NCT05130970,0.109,0.219,0.289,-0.11,-0.18,-0.037,True
+rly-2608,"Congenital Lipomatous Overgrowth, Vascular Malformations, and Epidermal Nevi",Others,2025-06-13,NCT06789913,0.276,0.386,0.289,-0.11,-0.013,-0.212,False
+m-1095,Folliculitis,Others,2022-04-25,NCT05322473,0.277,0.386,0.289,-0.109,-0.012,-0.212,False
+com-701,Ovarian Neoplasms,Oncology,2025-07-21,NCT06888921,0.137,0.246,0.289,-0.109,-0.152,0.01,True
+blinatumomab,"Arthritis, Rheumatoid",Autoimmune,2025-07-16,NCT06570798,0.423,0.314,0.289,0.109,0.134,-0.025,True
+emrusolmin,Multiple System Atrophy,Neurology,2025-09-30,NCT07197866,0.16,0.268,0.289,-0.108,-0.129,-0.051,False
+efavaleukin alfa,"Colitis, Ulcerative",Autoimmune,2022-01-31,NCT04987307,0.207,0.314,0.289,-0.107,-0.082,-0.025,True
+sibeprenlimab,Dry Eye Syndromes,Ophthalmology,2025-04-23,NCT06928142,0.249,0.355,0.289,-0.106,-0.04,-0.089,False
+eltrekibart,"Colitis, Ulcerative",Autoimmune,2024-10-10,NCT06598943,0.208,0.314,0.289,-0.106,-0.081,-0.025,True
+cotadutide,Liver Cirrhosis,Gastroenterology,2022-07-14,NCT05364931,0.236,0.342,0.289,-0.106,-0.053,-0.156,False
+bezisterim,Parkinson Disease,Neurology,2022-01-04,NCT05083260,0.163,0.268,0.289,-0.105,-0.126,-0.051,False
+clofutriben,Cushing Syndrome,Endocrine,2022-09-01,NCT05307328,0.161,0.266,0.289,-0.105,-0.128,0.021,True
+clofutriben,Pituitary ACTH Hypersecretion,Neurology,2022-09-01,NCT05307328,0.164,0.268,0.289,-0.104,-0.125,-0.051,False
+axitinib,Choroidal Effusions,Ophthalmology,2023-05-31,NCT05891548,0.252,0.355,0.289,-0.103,-0.037,-0.089,False
+evexomostat,Breast Neoplasms,Oncology,2022-08-26,NCT05455619,0.143,0.246,0.289,-0.103,-0.146,0.01,True
+bendamustine,Multiple Sclerosis,Autoimmune,2026-03-01,NCT07477639,0.211,0.314,0.289,-0.103,-0.078,-0.025,True
+budigalimab,Disease,Others,2023-10-12,NCT06032546,0.284,0.386,0.289,-0.102,-0.005,-0.212,False
+zolacabtagene autoleucel,"Lupus Erythematosus, Systemic",Autoimmune,2025-07-14,NCT07015983,0.213,0.314,0.289,-0.101,-0.076,-0.025,True
+delocamten,"Cardiomyopathy, Hypertrophic",Cardiovascular,2023-01-18,NCT05556343,0.311,0.21,0.289,0.101,0.022,0.03,True
+pacibekitug,Eye Diseases,Ophthalmology,2024-02-19,NCT06088979,0.254,0.355,0.289,-0.101,-0.035,-0.089,False
+sapanisertib,Recurrence,Others,2022-07-21,NCT05275673,0.286,0.386,0.289,-0.1,-0.003,-0.212,False
+rhenium re-186 obisbemeda,Nervous System Diseases,Neurology,2025-07-02,NCT07098806,0.168,0.268,0.289,-0.1,-0.121,-0.051,False
+"5-(4-((2s,5s)-5-(4-chlorobenzyl)-2-methylmorpholino)piperidin-1-yl)-1h-1,2,4-triazol-3-amine",Sarcoidosis,Allergy,2024-03-21,NCT06205121,0.184,0.283,0.289,-0.099,-0.105,-0.059,False
+tildacerfont,Adrenal Gland Diseases,Others,2021-12-10,NCT05128942,0.287,0.386,0.289,-0.099,-0.002,-0.212,False
+imneskibart,"Diabetes Mellitus, Insulin-Dependent, 10",Endocrine,2022-04-04,NCT05267626,0.167,0.266,0.289,-0.099,-0.122,0.021,True
+mivelsiran,Cerebral Amyloid Angiopathy,Neurology,2024-05-17,NCT06393712,0.17,0.268,0.289,-0.098,-0.119,-0.051,False
+bimagrumab,"Diabetes Mellitus, Type 2",Endocrine,2025-05-23,NCT06901349,0.362,0.266,0.289,0.096,0.073,0.021,True
+tarlatamab,Small Cell Lung Carcinoma,Oncology,2021-12-01,NCT05060016,0.342,0.246,0.289,0.096,0.053,0.01,True
+anitocabtagene autoleucel,Multiple Myeloma,Oncology,2022-07-15,NCT05396885,0.341,0.246,0.289,0.095,0.052,0.01,True
+naronapride,Gastroparesis,Gastroenterology,2023-01-03,NCT05621811,0.248,0.342,0.289,-0.094,-0.041,-0.156,False
+sotorasib,Lung Diseases,Respiratory,2021-12-30,NCT05054725,0.312,0.219,0.289,0.093,0.023,-0.037,True
+nu-3,Diabetes Complications,Endocrine,2022-03-11,NCT05276401,0.173,0.266,0.289,-0.093,-0.116,0.021,True
+lorundrostat,Sleep Apnea Syndromes,Neurology,2025-02-28,NCT06785454,0.176,0.268,0.289,-0.092,-0.113,-0.051,False
+yh-001,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2022-11-14,NCT05448820,0.358,0.266,0.289,0.092,0.069,0.021,True
+nu-3,Diabetic Neuropathies,Neurology,2022-03-11,NCT05276401,0.176,0.268,0.289,-0.092,-0.113,-0.051,False
+atumelnant,Pituitary ACTH Hypersecretion,Neurology,2023-10-12,NCT05804669,0.176,0.268,0.289,-0.092,-0.113,-0.051,False
+alintegimod,"Carcinoma, Hepatocellular",Oncology,2024-08-23,NCT06362369,0.155,0.246,0.289,-0.091,-0.134,0.01,True
+pertuzumab,Recurrence,Others,2022-01-31,NCT05150691,0.295,0.386,0.289,-0.091,0.006,-0.212,False
+jbi-802 free base,Neoplasm Metastasis,Oncology,2022-04-08,NCT05268666,0.155,0.246,0.289,-0.091,-0.134,0.01,True
+rhenium re-186 obisbemeda,Central Nervous System Neoplasms,Oncology,2025-07-02,NCT07098806,0.155,0.246,0.289,-0.091,-0.134,0.01,True
+siplizumab,"Rejection, Psychology",Others,2026-06-29,NCT07508787,0.296,0.386,0.289,-0.09,0.007,-0.212,False
+povorcitinib,Asthma,Allergy,2023-07-11,NCT05851443,0.193,0.283,0.289,-0.09,-0.096,-0.059,False
+envucitinib,Autoimmune Diseases,Autoimmune,2023-06-26,NCT05966480,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+tamuzimod,"Colitis, Ulcerative",Autoimmune,2021-11-30,NCT05156125,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+cenacitinib,Crohn Disease,Autoimmune,2023-01-25,NCT05688852,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+ab-8939,GATA2 Deficiency,Oncology,2022-06-01,NCT05211570,0.158,0.246,0.289,-0.088,-0.131,0.01,True
+biib-091,Multiple Sclerosis,Autoimmune,2023-07-25,NCT05798520,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+ragaglitazar,Multiple Sclerosis,Autoimmune,2023-07-25,NCT05798520,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+icovamenib,"Diabetes Mellitus, Type 1",Autoimmune,2023-12-28,NCT06152042,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+orismilast,Psoriasis,Autoimmune,2021-12-30,NCT05190419,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+adecatumumab,"Colitis, Ulcerative",Autoimmune,2025-06-26,NCT07113522,0.226,0.314,0.289,-0.088,-0.063,-0.025,True
+indenebart,Multiple System Atrophy,Neurology,2022-11-16,NCT05526391,0.181,0.268,0.289,-0.087,-0.108,-0.051,False
+efinopegdutide,Non-alcoholic Fatty Liver Disease,Gastroenterology,2023-06-23,NCT05877547,0.255,0.342,0.289,-0.087,-0.034,-0.156,False
+dezecapavir,HIV Infections,Infectious disease,2023-10-25,NCT06039579,0.297,0.384,0.289,-0.087,0.008,-0.162,False
+vemircopan,"Glomerulonephritis, IGA",Autoimmune,2022-01-14,NCT05097989,0.228,0.314,0.289,-0.086,-0.061,-0.025,True
+tuvusertib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2023-09-13,NCT05882734,0.183,0.268,0.289,-0.085,-0.106,-0.051,False
+napazimone,Diabetes Mellitus,Endocrine,2022-12-13,NCT05650229,0.181,0.266,0.289,-0.085,-0.108,0.021,True
+mitiperstat,"Pulmonary Disease, Chronic Obstructive",Respiratory,2022-11-14,NCT05492877,0.134,0.219,0.289,-0.085,-0.155,-0.037,True
+atuliflapon,Asthma,Allergy,2022-01-27,NCT05251259,0.198,0.283,0.289,-0.085,-0.091,-0.059,False
+tulmimetostat,"Bulbo-Spinal Atrophy, X-Linked",Neurology,2026-01-13,NCT07190300,0.183,0.268,0.289,-0.085,-0.106,-0.051,False
+mw-150,Alzheimer Disease,Psychiatry,2022-05-01,NCT05194163,0.184,0.268,0.289,-0.084,-0.105,-0.056,False
+pemvidutide,Alcoholism,Psychiatry,2025-05-15,NCT06987513,0.184,0.268,0.289,-0.084,-0.105,-0.056,False
+2-hydroxypropyl-beta-cyclodextrin,Alzheimer Disease,Psychiatry,2022-09-23,NCT05607615,0.184,0.268,0.289,-0.084,-0.105,-0.056,False
+bempikibart,"Dermatitis, Atopic",Allergy,2022-09-30,NCT05509023,0.199,0.283,0.289,-0.084,-0.09,-0.059,False
+solengepras,Parkinson Disease,Neurology,2023-09-11,NCT06006247,0.184,0.268,0.289,-0.084,-0.105,-0.051,False
+napazimone,Muscle Weakness,Neurology,2022-12-13,NCT05650229,0.184,0.268,0.289,-0.084,-0.105,-0.051,False
+nomlabofusp,Friedreich Ataxia,Neurology,2022-09-21,NCT05579691,0.184,0.268,0.289,-0.084,-0.105,-0.051,False
+ibentatug,Adenocarcinoma,Oncology,2022-01-14,NCT05074472,0.163,0.246,0.289,-0.083,-0.126,0.01,True
+tamuzimod,Amyotrophic Lateral Sclerosis,Neurology,2025-12-19,NCT07287397,0.185,0.268,0.289,-0.083,-0.104,-0.051,False
+sulfur hexafluoride,Brain Neoplasms,Oncology,2024-10-22,NCT06329570,0.163,0.246,0.289,-0.083,-0.126,0.01,True
+kt-474,"Dermatitis, Atopic",Allergy,2023-11-09,NCT06058156,0.2,0.283,0.289,-0.083,-0.089,-0.059,False
+sar-bbn,Prostatic Neoplasms,Oncology,2023-06-15,NCT05633160,0.163,0.246,0.289,-0.083,-0.126,0.01,True
+zapnometinib,Wolff-Parkinson-White Syndrome,Neurology,2026-09-14,NCT07738107,0.185,0.268,0.289,-0.083,-0.104,-0.051,False
+orellanine,"Carcinoma, Renal Cell",Oncology,2023-08-04,NCT05287945,0.164,0.246,0.289,-0.082,-0.125,0.01,True
+intismeran autogene,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2024-03-28,NCT06305767,0.186,0.268,0.289,-0.082,-0.103,-0.051,False
+mas-825,"Arthritis, Juvenile",Autoimmune,2025-11-03,NCT07203001,0.232,0.314,0.289,-0.082,-0.057,-0.025,True
+sacituzumab tirumotecan,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2023-05-16,NCT05319730,0.186,0.268,0.289,-0.082,-0.103,-0.051,False
+ritlecitinib,Chronic Urticaria,Allergy,2025-10-30,NCT07219615,0.201,0.283,0.289,-0.082,-0.088,-0.059,False
+m-1095,Hidradenitis Suppurativa,Infectious disease,2022-04-25,NCT05322473,0.302,0.384,0.289,-0.082,0.013,-0.162,False
+tilrekimig,"Dermatitis, Atopic",Allergy,2023-08-22,NCT05995964,0.202,0.283,0.289,-0.081,-0.087,-0.059,False
+empasiprubart,Dermatomyositis,Neurology,2024-08-20,NCT06284954,0.187,0.268,0.289,-0.081,-0.102,-0.051,False
+ompekimig,"Dermatitis, Atopic",Allergy,2023-08-22,NCT05995964,0.202,0.283,0.289,-0.081,-0.087,-0.059,False
+zelatriazin,"Depressive Disorder, Major",Psychiatry,2021-11-30,NCT05165394,0.187,0.268,0.289,-0.081,-0.102,-0.056,False
+gsk-1070806,"Dermatitis, Atopic",Allergy,2023-11-16,NCT05999799,0.202,0.283,0.289,-0.081,-0.087,-0.059,False
+rademikibart,Asthma,Allergy,2026-08-21,NCT07705737,0.203,0.283,0.289,-0.08,-0.086,-0.059,False
+afimkibart,"Dermatitis, Atopic",Allergy,2025-04-01,NCT06863961,0.203,0.283,0.289,-0.08,-0.086,-0.059,False
+bosakitug,"Dermatitis, Atopic",Allergy,2023-07-31,NCT05932654,0.203,0.283,0.289,-0.08,-0.086,-0.059,False
+emraclidine,Mental Disorders,Psychiatry,2022-06-30,NCT05227690,0.19,0.268,0.289,-0.078,-0.099,-0.056,False
+obecabtagene autoleucel,"Lupus Erythematosus, Systemic",Autoimmune,2026-01-16,NCT07053800,0.236,0.314,0.289,-0.078,-0.053,-0.025,True
+renvistobart,"Carcinoma, Non-Small-Cell Lung",Oncology,2022-10-03,NCT05005273,0.323,0.246,0.289,0.077,0.034,0.01,True
+sorafenib,Hepatitis B,Infectious disease,2022-01-01,NCT04710641,0.307,0.384,0.289,-0.077,0.018,-0.162,False
+seclidemstat,"Chondrosarcoma, Extraskeletal Myxoid",Oncology,2022-01-15,NCT05266196,0.169,0.246,0.289,-0.077,-0.12,0.01,True
+slc-391,"Carcinoma, Non-Small-Cell Lung",Oncology,2023-05-31,NCT05860296,0.171,0.246,0.289,-0.075,-0.118,0.01,True
+lutetium tezuvotidexetan,Prostatic Neoplasms,Oncology,2022-07-20,NCT05413850,0.171,0.246,0.289,-0.075,-0.118,0.01,True
+balovaptan,Ischemic Stroke,Neurology,2022-06-22,NCT05399550,0.193,0.268,0.289,-0.075,-0.096,-0.051,False
+zanvipixant,Bipolar Disorder,Psychiatry,2022-06-03,NCT05328297,0.194,0.268,0.289,-0.074,-0.095,-0.056,False
+redasemtide,Ischemic Stroke,Neurology,2023-07-14,NCT05953480,0.194,0.268,0.289,-0.074,-0.095,-0.051,False
+gemlapodect,Tourette Syndrome,Psychiatry,2024-09-10,NCT06315751,0.194,0.268,0.289,-0.074,-0.095,-0.056,False
+votoplam,Neurodegenerative Diseases,Neurology,2022-06-03,NCT05358717,0.194,0.268,0.289,-0.074,-0.095,-0.051,False
+abx-002,"Depressive Disorder, Major",Psychiatry,2024-09-20,NCT06633016,0.194,0.268,0.289,-0.074,-0.095,-0.056,False
+daraxonrasib,Lung Diseases,Respiratory,2023-11-14,NCT06128551,0.147,0.219,0.289,-0.072,-0.142,-0.037,True
+sotorasib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2021-12-30,NCT05054725,0.339,0.268,0.289,0.071,0.05,-0.051,False
+dazukibart,"Lupus Erythematosus, Cutaneous",Autoimmune,2023-07-07,NCT05879718,0.243,0.314,0.289,-0.071,-0.046,-0.025,True
+palbociclib,Urologic Diseases,Urology,2023-07-28,NCT05935748,0.221,0.15,0.289,0.071,-0.068,0.022,True
+votoplam,Huntington Disease,Psychiatry,2022-06-03,NCT05358717,0.198,0.268,0.289,-0.07,-0.091,-0.056,False
+plixorafenib,Biliary Tract Neoplasms,Oncology,2023-02-21,NCT05503797,0.316,0.246,0.289,0.07,0.027,0.01,True
+macupatide,"Diabetes Mellitus, Type 2",Endocrine,2025-10-16,NCT07215559,0.196,0.266,0.289,-0.07,-0.093,0.021,True
+foselutoclax,Diabetes Mellitus,Endocrine,2023-08-23,NCT06011798,0.196,0.266,0.289,-0.07,-0.093,0.021,True
+efimosfermin alfa,"Liver Diseases, Alcoholic",Psychiatry,2026-08-31,NCT07791043,0.198,0.268,0.289,-0.07,-0.091,-0.056,False
+zagociguat,Alzheimer Disease,Psychiatry,2021-11-02,NCT04798989,0.199,0.268,0.289,-0.069,-0.09,-0.056,False
+lasofoxifene,Dyspareunia,Psychiatry,2026-06-01,NCT06197568,0.199,0.268,0.289,-0.069,-0.09,-0.056,False
+galvokimig,"Dermatitis, Atopic",Allergy,2025-12-29,NCT07277660,0.214,0.283,0.289,-0.069,-0.075,-0.059,False
+nv-5138,"Depressive Disorder, Treatment-Resistant",Psychiatry,2022-01-18,NCT05066672,0.199,0.268,0.289,-0.069,-0.09,-0.056,False
+bimagrumab,Obesity,Metabolic,2022-11-16,NCT05616013,0.382,0.45,0.289,-0.068,0.093,-0.152,False
+invikafusp alfa,Abdominal Neoplasms,Oncology,2023-01-04,NCT05592626,0.178,0.246,0.289,-0.068,-0.111,0.01,True
+feniralstat,Hereditary Angioedema Types I and II,Allergy,2021-11-18,NCT05055258,0.215,0.283,0.289,-0.068,-0.074,-0.059,False
+luvixasertib,Breast Neoplasms,Oncology,2022-05-27,NCT05251714,0.178,0.246,0.289,-0.068,-0.111,0.01,True
+frevecitinib,Asthma,Allergy,2026-07-16,NCT07532265,0.215,0.283,0.289,-0.068,-0.074,-0.059,False
+amxt-1501,Breast Neoplasms,Oncology,2022-11-29,NCT05500508,0.178,0.246,0.289,-0.068,-0.111,0.01,True
+fordadistrogene movaparvovec,"Muscular Dystrophy, Duchenne",Neurology,2022-08-08,NCT05429372,0.2,0.268,0.289,-0.068,-0.089,-0.051,False
+irl-201104,Eosinophilic Esophagitis,Allergy,2021-10-29,NCT05084963,0.215,0.283,0.289,-0.068,-0.074,-0.059,False
+verekitug,Asthma,Allergy,2024-02-27,NCT06196879,0.215,0.283,0.289,-0.068,-0.074,-0.059,False
+eclutatug,Head and Neck Neoplasms,Oncology,2023-10-30,NCT06054477,0.178,0.246,0.289,-0.068,-0.111,0.01,True
+povetacicept,Myasthenia Gravis,Oncology,2026-05-13,NCT07501702,0.179,0.246,0.289,-0.067,-0.11,0.01,True
+raludotatug deruxtecan,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2025-05-13,NCT06780085,0.335,0.268,0.289,0.067,0.046,-0.051,False
+abemaciclib,Central Nervous System Diseases,Neurology,2022-08-31,NCT05386108,0.335,0.268,0.289,0.067,0.046,-0.051,False
+denatonium,Prader-Willi Syndrome,Neurology,2022-05-27,NCT05153434,0.202,0.268,0.289,-0.066,-0.087,-0.051,False
+atumelnant,"Adrenal Hyperplasia, Congenital",Endocrine,2023-07-03,NCT05907291,0.2,0.266,0.289,-0.066,-0.089,0.021,True
+endoxifen,"Puberty, Precocious",Endocrine,2027-03-31,NCT07869732,0.2,0.266,0.289,-0.066,-0.089,0.021,True
+nisotirostide,"Diabetes Mellitus, Type 2",Endocrine,2025-03-28,NCT06897475,0.201,0.266,0.289,-0.065,-0.088,0.021,True
+porustobart,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2026-09-30,NCT07808151,0.201,0.266,0.289,-0.065,-0.088,0.021,True
+delpacibart braxlosiran,Muscular Dystrophies,Neurology,2024-07-25,NCT06547216,0.203,0.268,0.289,-0.065,-0.086,-0.051,False
+oloctinebart,Alzheimer Disease,Psychiatry,2022-09-15,NCT05476783,0.203,0.268,0.289,-0.065,-0.086,-0.056,False
+lenalidomide,"Pyloric Stenosis, Hypertrophic",Gastroenterology,2022-04-15,NCT05328102,0.277,0.342,0.289,-0.065,-0.012,-0.156,False
+solizmestrocel,"Muscular Dystrophy, Duchenne",Neurology,2024-08-05,NCT06579352,0.203,0.268,0.289,-0.065,-0.086,-0.051,False
+sevasemten,"Muscular Dystrophy, Duchenne",Neurology,2022-11-10,NCT05291091,0.204,0.268,0.289,-0.064,-0.085,-0.051,False
+galvokimig,"Pulmonary Disease, Chronic Obstructive",Respiratory,2026-07-27,NCT07725939,0.156,0.219,0.289,-0.063,-0.133,-0.037,True
+pertuzumab zuvotolimod,Breast Neoplasms,Oncology,2022-02-08,NCT05091528,0.183,0.246,0.289,-0.063,-0.106,0.01,True
+evalstotug,Melanoma,Oncology,2022-08-03,NCT05180799,0.183,0.246,0.289,-0.063,-0.106,0.01,True
+reparixin,Respiratory Distress Syndrome,Respiratory,2022-12-06,NCT05496868,0.282,0.219,0.289,0.063,-0.007,-0.037,True
+porustobart,Spinocerebellar Degenerations,Neurology,2026-09-30,NCT07808151,0.205,0.268,0.289,-0.063,-0.084,-0.051,False
+bivamelagon,Sexual Infantilism,Endocrine,2025-11-10,NCT07156578,0.203,0.266,0.289,-0.063,-0.086,0.021,True
+anumigilimab,"Genetic Diseases, Inborn",Others,2026-02-02,NCT07224360,0.324,0.386,0.289,-0.062,0.035,-0.212,False
+frespaciguat,"Pulmonary Disease, Chronic Obstructive",Respiratory,2023-03-16,NCT05612035,0.158,0.219,0.289,-0.061,-0.131,-0.037,True
+bersiporocin,Idiopathic Pulmonary Fibrosis,Respiratory,2022-07-29,NCT05389215,0.158,0.219,0.289,-0.061,-0.131,-0.037,True
+tuvusertib,"Carcinoma, Non-Small-Cell Lung",Oncology,2023-09-13,NCT05882734,0.185,0.246,0.289,-0.061,-0.104,0.01,True
+cannabidiol,Pericarditis,Cardiovascular,2023-01-09,NCT05494788,0.271,0.21,0.289,0.061,-0.018,0.03,True
+precemtabart tocentecan,"Carcinoma, Non-Small-Cell Lung",Oncology,2025-01-29,NCT06710132,0.185,0.246,0.289,-0.061,-0.104,0.01,True
+surovatamig,Burkitt Lymphoma,Oncology,2023-12-29,NCT06137118,0.185,0.246,0.289,-0.061,-0.104,0.01,True
+daxdilimab,Myositis,Neurology,2023-12-04,NCT05669014,0.207,0.268,0.289,-0.061,-0.082,-0.051,False
+lotiglipron,Diabetes Mellitus,Endocrine,2022-10-27,NCT05579977,0.205,0.266,0.289,-0.061,-0.084,0.021,True
+lartesertib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2024-10-30,NCT06433219,0.207,0.268,0.289,-0.061,-0.082,-0.051,False
+gelsolin,Respiratory Distress Syndrome,Respiratory,2024-10-03,NCT05947955,0.158,0.219,0.289,-0.061,-0.131,-0.037,True
+verekitug,Nasal Polyps,Respiratory,2023-12-18,NCT06164704,0.158,0.219,0.289,-0.061,-0.131,-0.037,True
+oditrasertib,Amyotrophic Lateral Sclerosis,Neurology,2022-04-13,NCT05237284,0.207,0.268,0.289,-0.061,-0.082,-0.051,False
+tulisokibart,"Lung Diseases, Interstitial",Respiratory,2022-03-29,NCT05270668,0.158,0.219,0.289,-0.061,-0.131,-0.037,True
+skl-27969,"Carcinoma, Non-Small-Cell Lung",Oncology,2022-09-12,NCT05388435,0.185,0.246,0.289,-0.061,-0.104,0.01,True
+balstilimab,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2022-11-30,NCT05608044,0.326,0.266,0.289,0.06,0.037,0.021,True
+zapnometinib,Cardiomyopathies,Cardiovascular,2026-09-14,NCT07738107,0.15,0.21,0.289,-0.06,-0.139,0.03,True
+denrakibart,Neuralgia,Neurology,2023-09-20,NCT05838755,0.209,0.268,0.289,-0.059,-0.08,-0.051,False
+tak-733,Adenomatous Polyposis Coli,Oncology,2023-07-10,NCT05552755,0.304,0.246,0.289,0.058,0.015,0.01,True
+serabelisib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2024-12-12,NCT06463028,0.326,0.268,0.289,0.058,0.037,-0.051,False
+palbociclib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2023-04-17,NCT05768139,0.21,0.268,0.289,-0.058,-0.079,-0.051,False
+stx-478,Hereditary Sensory and Autonomic Neuropathies,Neurology,2023-04-17,NCT05768139,0.21,0.268,0.289,-0.058,-0.079,-0.051,False
+imlunestrant,Hereditary Sensory and Autonomic Neuropathies,Neurology,2023-04-17,NCT05768139,0.21,0.268,0.289,-0.058,-0.079,-0.051,False
+sapanisertib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2024-12-12,NCT06463028,0.326,0.268,0.289,0.058,0.037,-0.051,False
+camlipixant,Irritable Bowel Syndrome,Gastroenterology,2026-04-08,NCT07519395,0.284,0.342,0.289,-0.058,-0.005,-0.156,False
+pbt-434,Multiple System Atrophy,Neurology,2022-07-01,NCT05109091,0.211,0.268,0.289,-0.057,-0.078,-0.051,False
+ocadusertib,"Arthritis, Rheumatoid",Autoimmune,2023-05-23,NCT05848258,0.257,0.314,0.289,-0.057,-0.032,-0.025,True
+lunsekimig,Asthma,Allergy,2023-10-16,NCT06102005,0.226,0.283,0.289,-0.057,-0.063,-0.059,False
+ulixacaltamide,Essential Tremor,Neurology,2021-10-14,NCT05021991,0.211,0.268,0.289,-0.057,-0.078,-0.051,False
+treprostinil palmitil,Pulmonary Arterial Hypertension,Cardiovascular,2022-03-29,NCT04791514,0.153,0.21,0.289,-0.057,-0.136,0.03,True
+risvodetinib,Parkinson Disease,Neurology,2023-05-15,NCT05424276,0.211,0.268,0.289,-0.057,-0.078,-0.051,False
+sabirnetug,Memory Disorders,Neurology,2024-02-29,NCT06335173,0.211,0.268,0.289,-0.057,-0.078,-0.051,False
+tipifarnib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2021-12-07,NCT04997902,0.212,0.268,0.289,-0.056,-0.077,-0.051,False
+avelumab,"Diabetes Mellitus, Insulin-Dependent, 10",Endocrine,2022-04-04,NCT05267626,0.21,0.266,0.289,-0.056,-0.079,0.021,True
+pravibismane,Diabetic Foot,Cardiovascular,2022-06-13,NCT05174806,0.155,0.21,0.289,-0.055,-0.134,0.03,True
+cevostamab,Multiple Myeloma,Oncology,2022-10-17,NCT05535244,0.191,0.246,0.289,-0.055,-0.098,0.01,True
+camoteskimab,"Dermatitis, Atopic",Allergy,2024-05-01,NCT06436183,0.228,0.283,0.289,-0.055,-0.061,-0.059,False
+budigalimab,"Carcinoma, Hepatocellular",Oncology,2023-09-21,NCT05822752,0.301,0.246,0.289,0.055,0.012,0.01,True
+troculeucel,Alzheimer Disease,Psychiatry,2025-06-30,NCT07228078,0.213,0.268,0.289,-0.055,-0.076,-0.056,False
+ponsegromab,"Carcinoma, Non-Small-Cell Lung",Oncology,2022-11-21,NCT05546476,0.191,0.246,0.289,-0.055,-0.098,0.01,True
+trastuzumab deruxtecan,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2023-05-30,NCT05824975,0.32,0.266,0.289,0.054,0.031,0.021,True
+dazucorilant,Amyotrophic Lateral Sclerosis,Neurology,2022-11-15,NCT05407324,0.214,0.268,0.289,-0.054,-0.075,-0.051,False
+naptumomab estafenatox,"Carcinoma, Non-Small-Cell Lung",Oncology,2021-10-26,NCT04880863,0.3,0.246,0.289,0.054,0.011,0.01,True
+evinacumab,"Diabetes Mellitus, Type 2",Endocrine,2026-01-09,NCT07271186,0.213,0.266,0.289,-0.053,-0.076,0.021,True
+lb-102,Schizophrenia,Psychiatry,2023-11-29,NCT06179108,0.215,0.268,0.289,-0.053,-0.074,-0.056,False
+rapcabtagene autoleucel,Dermatomyositis,Neurology,2024-12-17,NCT06665256,0.215,0.268,0.289,-0.053,-0.074,-0.051,False
+sabirnetug,Alzheimer Disease,Psychiatry,2024-02-29,NCT06335173,0.215,0.268,0.289,-0.053,-0.074,-0.056,False
+artesunate,Papillomavirus Infections,Oncology,2023-02-10,NCT05555862,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+rosnilimab,"Arthritis, Rheumatoid",Autoimmune,2023-08-31,NCT06041269,0.262,0.314,0.289,-0.052,-0.027,-0.025,True
+canvuparatide,Hypoparathyroidism,Endocrine,2024-08-08,NCT06465108,0.214,0.266,0.289,-0.052,-0.075,0.021,True
+rezorstobart,Burkitt Lymphoma,Oncology,2022-11-28,NCT05565417,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+spevatamig,Biliary Tract Neoplasms,Oncology,2023-03-15,NCT05482893,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+solnerstotug,Breast Neoplasms,Oncology,2023-05-31,NCT05864144,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+lp-184,Neoplasm Metastasis,Oncology,2023-06-09,NCT05933265,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+mavrostobart,"Carcinoma, Non-Small-Cell Lung",Oncology,2022-08-11,NCT05431270,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+leramistat,Idiopathic Pulmonary Fibrosis,Respiratory,2023-08-30,NCT05951296,0.167,0.219,0.289,-0.052,-0.122,-0.037,True
+inx-315,Breast Neoplasms,Oncology,2023-03-28,NCT05735080,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+ggti-2418,"Lymphoma, Non-Hodgkin",Oncology,2025-03-28,NCT06854653,0.298,0.246,0.289,0.052,0.009,0.01,True
+pocenbrodib,Prostatic Neoplasms,Oncology,2025-02-07,NCT06785636,0.194,0.246,0.289,-0.052,-0.095,0.01,True
+ulviprubart,"Leukemia, Large Granular Lymphocytic",Oncology,2022-09-28,NCT05532722,0.195,0.246,0.289,-0.051,-0.094,0.01,True
+terfenadine,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2023-05-16,NCT05319730,0.217,0.268,0.289,-0.051,-0.072,-0.051,False
+ecnoglutide,Hypertension,Cardiovascular,2025-11-25,NCT07281937,0.261,0.21,0.289,0.051,-0.028,0.03,True
+reparixin,Fatigue,Others,2022-04-19,NCT05212701,0.335,0.386,0.289,-0.051,0.046,-0.212,False
+rintatolimod,Pancreatic Neoplasms,Oncology,2027-08-31,NCT05494697,0.297,0.246,0.289,0.051,0.008,0.01,True
+imneskibart,"Carcinoma, Merkel Cell",Oncology,2022-04-04,NCT05267626,0.195,0.246,0.289,-0.051,-0.094,0.01,True
+tilrekimig,Dyspnea,Respiratory,2025-05-20,NCT06977581,0.168,0.219,0.289,-0.051,-0.121,-0.037,True
+zamaporvint,Colorectal Neoplasms,Oncology,2021-11-08,NCT04907539,0.195,0.246,0.289,-0.051,-0.094,0.01,True
+denrakibart,Diabetes Mellitus,Endocrine,2023-09-20,NCT05838755,0.216,0.266,0.289,-0.05,-0.073,0.021,True
+anvatabart opadotin,Breast Neoplasms,Oncology,2021-10-26,NCT04829604,0.296,0.246,0.289,0.05,0.007,0.01,True
+balstilimab,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2022-11-30,NCT05608044,0.317,0.268,0.289,0.049,0.028,-0.051,False
+pemafibrate,"Liver Cirrhosis, Biliary",Gastroenterology,2024-02-07,NCT06247735,0.293,0.342,0.289,-0.049,0.004,-0.156,False
+isuzinaxib,Pulmonary Fibrosis,Respiratory,2021-10-20,NCT04880109,0.171,0.219,0.289,-0.048,-0.118,-0.037,True
+puxitatug samrotecan,Breast Neoplasms,Oncology,2021-10-18,NCT05123482,0.198,0.246,0.289,-0.048,-0.091,0.01,True
+nt-0796,"Diabetes Mellitus, Type 2",Endocrine,2025-05-08,NCT07055516,0.218,0.266,0.289,-0.048,-0.071,0.021,True
+semaglutide,Muscular Atrophy,Neurology,2024-04-29,NCT06282458,0.316,0.268,0.289,0.048,0.027,-0.051,False
+enzomenib,"Leukemia, Myeloid, Acute",Oncology,2022-02-28,NCT04988555,0.198,0.246,0.289,-0.048,-0.091,0.01,True
+selnoflast,Atherosclerosis,Cardiovascular,2026-06-05,NCT07448038,0.162,0.21,0.289,-0.048,-0.127,0.03,True
+rapcabtagene autoleucel,Myasthenia Gravis,Oncology,2025-04-22,NCT06704269,0.199,0.246,0.289,-0.047,-0.09,0.01,True
+tildacerfont,Polycystic Ovary Syndrome,Oncology,2022-05-15,NCT05370521,0.199,0.246,0.289,-0.047,-0.09,0.01,True
+nb-001,DiGeorge Syndrome,Cardiovascular,2022-02-10,NCT05290493,0.164,0.21,0.289,-0.046,-0.125,0.03,True
+inlexisertib,Gastrointestinal Stromal Tumors,Oncology,2023-09-28,NCT05957367,0.201,0.246,0.289,-0.045,-0.088,0.01,True
+vociprotafib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2021-12-30,NCT05054725,0.223,0.268,0.289,-0.045,-0.066,-0.051,False
+vimseltinib,Bronchiolitis Obliterans,Respiratory,2024-11-21,NCT06619561,0.174,0.219,0.289,-0.045,-0.115,-0.037,True
+ramucirumab,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2024-08-07,NCT06445972,0.224,0.268,0.289,-0.044,-0.065,-0.051,False
+rademikibart,"Pulmonary Disease, Chronic Obstructive",Respiratory,2026-08-21,NCT07705737,0.175,0.219,0.289,-0.044,-0.114,-0.037,True
+icalcaprant,"Depressive Disorder, Major",Psychiatry,2025-12-18,NCT07276997,0.224,0.268,0.289,-0.044,-0.065,-0.056,False
+maridebart cafraglutide,"Diabetes Mellitus, Type 2",Endocrine,2023-01-18,NCT05669599,0.222,0.266,0.289,-0.044,-0.067,0.021,True
+rinatabart sesutecan,Breast Neoplasms,Oncology,2022-12-07,NCT05579366,0.202,0.246,0.289,-0.044,-0.087,0.01,True
+recifercept,Dwarfism,Endocrine,2021-12-24,NCT05116046,0.222,0.266,0.289,-0.044,-0.067,0.021,True
+dotamtate,Neuroendocrine Tumors,Oncology,2021-12-21,NCT05153772,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+nx-5948,"Leukemia, Lymphocytic, Chronic, B-Cell",Oncology,2025-10-15,NCT07221500,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+cemsidomide,Multiple Myeloma,Oncology,2026-02-18,NCT07284758,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+setanaxib,Squamous Cell Carcinoma of Head and Neck,Oncology,2022-04-06,NCT05323656,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+ubidecarenone,Glioblastoma,Oncology,2022-08-22,NCT04752813,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+perenostobart,Neoplasms,Oncology,2022-01-17,NCT05177770,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+nanrilkefusp alfa,"Carcinoma, Hepatocellular",Oncology,2022-06-21,NCT05256381,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+daraxonrasib,Appendiceal Neoplasms,Oncology,2023-11-14,NCT06128551,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+abenacianine,Lung Neoplasms,Oncology,2023-10-05,NCT06145048,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+isunakinra,Colorectal Neoplasms,Oncology,2025-01-30,NCT06634875,0.203,0.246,0.289,-0.043,-0.086,0.01,True
+amelenodor,"Lymphoma, Follicular",Oncology,2023-04-24,NCT05785715,0.204,0.246,0.289,-0.042,-0.085,0.01,True
+lorigerlimab,"Prostatic Neoplasms, Castration-Resistant",Oncology,2023-09-28,NCT05848011,0.204,0.246,0.289,-0.042,-0.085,0.01,True
+azd-9574,Astrocytoma,Oncology,2022-06-24,NCT05417594,0.288,0.246,0.289,0.042,-0.001,0.01,True
+"2,2'-dithiodiethanesulfonic acid",Adenocarcinoma of Lung,Oncology,2023-03-01,NCT05456256,0.205,0.246,0.289,-0.041,-0.084,0.01,True
+arlocabtagene autoleucel,Multiple Myeloma,Oncology,2024-03-21,NCT06297226,0.205,0.246,0.289,-0.041,-0.084,0.01,True
+porustobart,Colonic Neoplasms,Oncology,2026-09-30,NCT07808151,0.205,0.246,0.289,-0.041,-0.084,0.01,True
+dalmitamig,"Carcinoma, Non-Small-Cell Lung",Oncology,2024-11-18,NCT06465329,0.205,0.246,0.289,-0.041,-0.084,0.01,True
+ropidoxuridine,Glioblastoma,Oncology,2024-09-02,NCT06359379,0.205,0.246,0.289,-0.041,-0.084,0.01,True
+falbikitug,"Carcinoma, Non-Small-Cell Lung",Oncology,2022-04-14,NCT05061550,0.287,0.246,0.289,0.041,-0.002,0.01,True
+cemacabtagene ansegedleucel,"Lymphoma, Large B-Cell, Diffuse",Oncology,2024-06-18,NCT06500273,0.205,0.246,0.289,-0.041,-0.084,0.01,True
+saruparib,"Bulbo-Spinal Atrophy, X-Linked",Neurology,2026-01-27,NCT07336446,0.228,0.268,0.289,-0.04,-0.061,-0.051,False
+fosigotifator,Nervous System Diseases,Neurology,2023-03-13,NCT05757141,0.229,0.268,0.289,-0.039,-0.06,-0.051,False
+eribulin,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2023-05-30,NCT05824975,0.305,0.266,0.289,0.039,0.016,0.021,True
+belantamab,Multiple Myeloma,Oncology,2023-06-14,NCT05714839,0.208,0.246,0.289,-0.038,-0.081,0.01,True
+lutikizumab,Hidradenitis Suppurativa,Infectious disease,2021-12-28,NCT05139602,0.346,0.384,0.289,-0.038,0.057,-0.162,False
+maplirpacept,"Carcinoma, Ovarian Epithelial",Oncology,2022-08-01,NCT05261490,0.208,0.246,0.289,-0.038,-0.081,0.01,True
+bbp-398,Biliary Tract Neoplasms,Oncology,2023-11-09,NCT06024174,0.208,0.246,0.289,-0.038,-0.081,0.01,True
+telisotuzumab adizutecan,Colorectal Neoplasms,Oncology,2024-11-08,NCT06614192,0.208,0.246,0.289,-0.038,-0.081,0.01,True
+botensilimab,"Parkinson Disease 4, Autosomal Dominant Lewy Body",Neurology,2022-11-30,NCT05608044,0.23,0.268,0.289,-0.038,-0.059,-0.051,False
+cedirogant,Psoriasis,Autoimmune,2021-11-16,NCT05044234,0.277,0.314,0.289,-0.037,-0.012,-0.025,True
+eloralintide,"Diabetes Mellitus, Type 2",Endocrine,2024-09-20,NCT06603571,0.23,0.266,0.289,-0.036,-0.059,0.021,True
+tulisokibart,Hidradenitis Suppurativa,Infectious disease,2025-06-09,NCT06956235,0.348,0.384,0.289,-0.036,0.059,-0.162,False
+epcoritamab,Recurrence,Others,2022-06-14,NCT05283720,0.35,0.386,0.289,-0.036,0.061,-0.212,False
+dapagliflozin,Breast Neoplasms,Oncology,2022-04-06,NCT04899349,0.282,0.246,0.289,0.036,-0.007,0.01,True
+nenocorilant,Neoplasms,Oncology,2026-01-16,NCT07276373,0.21,0.246,0.289,-0.036,-0.079,0.01,True
+namilumab,Sarcoidosis,Allergy,2022-08-23,NCT05351554,0.248,0.283,0.289,-0.035,-0.041,-0.059,False
+sitokiren,"Colitis, Ulcerative",Autoimmune,2022-03-21,NCT05019742,0.279,0.314,0.289,-0.035,-0.01,-0.025,True
+foralumab,"Multiple Sclerosis, Chronic Progressive",Autoimmune,2023-11-15,NCT06292923,0.348,0.314,0.289,0.034,0.059,-0.025,True
+ateganosine,Adenocarcinoma,Oncology,2022-06-08,NCT05208944,0.212,0.246,0.289,-0.034,-0.077,0.01,True
+nu-3,Cardiovascular Diseases,Cardiovascular,2022-03-11,NCT05276401,0.176,0.21,0.289,-0.034,-0.113,0.03,True
+tafasitamab,"Pyloric Stenosis, Hypertrophic",Gastroenterology,2022-04-15,NCT05328102,0.308,0.342,0.289,-0.034,0.019,-0.156,False
+uliledlimab,"Carcinoma, Non-Small-Cell Lung",Oncology,2021-11-02,NCT05001347,0.213,0.246,0.289,-0.033,-0.076,0.01,True
+soquelitinib,"Dermatitis, Atopic",Allergy,2026-02-28,NCT07441395,0.25,0.283,0.289,-0.033,-0.039,-0.059,False
+lti-03,Idiopathic Pulmonary Fibrosis,Respiratory,2026-02-02,NCT06968845,0.186,0.219,0.289,-0.033,-0.103,-0.037,True
+sevabertinib,Biliary Tract Neoplasms,Oncology,2025-02-13,NCT06760819,0.214,0.246,0.289,-0.032,-0.075,0.01,True
+olezarsen,Atherosclerosis,Cardiovascular,2022-05-09,NCT05355402,0.178,0.21,0.289,-0.032,-0.111,0.03,True
+zemirciclib,"Lymphoma, T-Cell, Peripheral",Oncology,2021-12-15,NCT05140382,0.214,0.246,0.289,-0.032,-0.075,0.01,True
+empasiprubart,Myasthenia Gravis,Oncology,2025-12-19,NCT07284420,0.214,0.246,0.289,-0.032,-0.075,0.01,True
+balinatunfib,"Colitis, Ulcerative",Autoimmune,2026-05-19,NCT07222189,0.283,0.314,0.289,-0.031,-0.006,-0.025,True
+certepetide,Bile Duct Neoplasms,Oncology,2023-05-13,NCT05712356,0.215,0.246,0.289,-0.031,-0.074,0.01,True
+srx246,Fragile X Syndrome,Neurology,2026-03-31,NCT07328529,0.299,0.268,0.289,0.031,0.01,-0.051,False
+lanifibranor,"Diabetes Mellitus, Type 2",Endocrine,2022-06-29,NCT05232071,0.297,0.266,0.289,0.031,0.008,0.021,True
+afimetoran,Autoimmune Diseases,Autoimmune,2021-10-11,NCT04895696,0.283,0.314,0.289,-0.031,-0.006,-0.025,True
+tamuzimod,"Lymphoma, Follicular",Oncology,2021-11-30,NCT05156125,0.215,0.246,0.289,-0.031,-0.074,0.01,True
+fipaxalparant,Idiopathic Pulmonary Fibrosis,Respiratory,2022-01-20,NCT05032066,0.189,0.219,0.289,-0.03,-0.1,-0.037,True
+temanogrel,Raynaud Disease,Cardiovascular,2021-11-03,NCT04915950,0.239,0.21,0.289,0.029,-0.05,0.03,True
+surzetoclax,Multiple Myeloma,Oncology,2025-07-23,NCT06953960,0.275,0.246,0.289,0.029,-0.014,0.01,True
+azeliragon,Pancreatic Neoplasms,Oncology,2023-06-01,NCT05766748,0.217,0.246,0.289,-0.029,-0.072,0.01,True
+rapcabtagene autoleucel,"Lung Diseases, Interstitial",Respiratory,2024-12-17,NCT06665256,0.19,0.219,0.289,-0.029,-0.099,-0.037,True
+botensilimab,"Diabetes Mellitus, Insulin-Dependent, 12",Endocrine,2022-11-30,NCT05608044,0.237,0.266,0.289,-0.029,-0.052,0.021,True
+apadamtase alfa,Ischemic Stroke,Neurology,2026-05-17,NCT07392450,0.24,0.268,0.289,-0.028,-0.049,-0.051,False
+sym-023,"Carcinoma, Non-Small-Cell Lung",Oncology,2024-08-07,NCT06162572,0.219,0.246,0.289,-0.027,-0.07,0.01,True
+casdozokitug,"Carcinoma, Hepatocellular",Oncology,2022-04-12,NCT05359861,0.219,0.246,0.289,-0.027,-0.07,0.01,True
+givastomig,Adenocarcinoma Of Esophagus,Oncology,2026-02-11,NCT07432295,0.272,0.246,0.289,0.026,-0.017,0.01,True
+stx-478,Breast Neoplasms,Oncology,2023-04-17,NCT05768139,0.22,0.246,0.289,-0.026,-0.069,0.01,True
+iloperidone,Hypertension,Cardiovascular,2025-09-15,NCT07090161,0.184,0.21,0.289,-0.026,-0.105,0.03,True
+fasudil,Amyotrophic Lateral Sclerosis,Neurology,2021-12-22,NCT05218668,0.243,0.268,0.289,-0.025,-0.046,-0.051,False
+cbp-501,Pancreatic Neoplasms,Oncology,2021-12-18,NCT04953962,0.221,0.246,0.289,-0.025,-0.068,0.01,True
+chlophedianol,Acquired Immunodeficiency Syndrome,Infectious disease,2025-04-14,NCT06891066,0.359,0.384,0.289,-0.025,0.07,-0.162,False
+bb-1701,Breast Neoplasms,Oncology,2024-04-10,NCT06188559,0.221,0.246,0.289,-0.025,-0.068,0.01,True
+tibulizumab,"Lung Diseases, Interstitial",Respiratory,2025-02-06,NCT06843239,0.244,0.219,0.289,0.025,-0.045,-0.037,True
+enpatoran,Dermatomyositis,Neurology,2023-01-19,NCT05650567,0.244,0.268,0.289,-0.024,-0.045,-0.051,False
+lomecitinib,Psoriasis,Autoimmune,2023-04-03,NCT05730725,0.337,0.314,0.289,0.023,0.048,-0.025,True
+dargistotug,"Carcinoma, Transitional Cell",Oncology,2022-08-17,NCT05327530,0.223,0.246,0.289,-0.023,-0.066,0.01,True
+denikitug,Adenocarcinoma Of Esophagus,Oncology,2026-08-07,NCT07546812,0.223,0.246,0.289,-0.023,-0.066,0.01,True
+obrixtamig,Small Cell Lung Carcinoma,Oncology,2023-10-13,NCT05882058,0.224,0.246,0.289,-0.022,-0.065,0.01,True
+terfenadine,Esophageal Neoplasms,Oncology,2023-05-16,NCT05319730,0.224,0.246,0.289,-0.022,-0.065,0.01,True
+abiraterone decanoate,Prostatic Neoplasms,Oncology,2025-08-19,NCT07005154,0.267,0.246,0.289,0.021,-0.022,0.01,True
+livmoniplimab,"Carcinoma, Hepatocellular",Oncology,2023-09-21,NCT05822752,0.225,0.246,0.289,-0.021,-0.064,0.01,True
+canakinumab,Alzheimer Disease,Psychiatry,2021-10-28,NCT04795466,0.247,0.268,0.289,-0.021,-0.042,-0.056,False
+lartesertib,Ovarian Neoplasms,Oncology,2024-10-30,NCT06433219,0.225,0.246,0.289,-0.021,-0.064,0.01,True
+vudalimab,"Adenocarcinoma, Clear Cell",Oncology,2022-07-21,NCT05032040,0.226,0.246,0.289,-0.02,-0.063,0.01,True
+yh-003,Melanoma,Oncology,2021-12-08,NCT05031494,0.227,0.246,0.289,-0.019,-0.062,0.01,True
+abiprubart,"Arthritis, Rheumatoid",Autoimmune,2021-12-14,NCT05198310,0.295,0.314,0.289,-0.019,0.006,-0.025,True
+ic14,"Arrhythmias, Cardiac",Cardiovascular,2024-03-29,NCT06275893,0.191,0.21,0.289,-0.019,-0.098,0.03,True
+endoxifen,Breast Neoplasms,Oncology,2023-02-14,NCT05607004,0.227,0.246,0.289,-0.019,-0.062,0.01,True
+alogabat,Angelman Syndrome,Neurology,2023-07-27,NCT05630066,0.286,0.268,0.289,0.018,-0.003,-0.051,False
+mas-825,Coronary Disease,Cardiovascular,2024-02-15,NCT06097663,0.192,0.21,0.289,-0.018,-0.097,0.03,True
+barzolvolimab,Chronic Urticaria,Allergy,2022-05-19,NCT05368285,0.3,0.283,0.289,0.017,0.011,-0.059,False
+trastuzumab pamirtecan,Breast Neoplasms,Oncology,2025-04-23,NCT06827236,0.229,0.246,0.289,-0.017,-0.06,0.01,True
+petrelintide,"Diabetes Mellitus, Type 2",Endocrine,2025-04-22,NCT06926842,0.249,0.266,0.289,-0.017,-0.04,0.021,True
+c-188-9,"Carcinoma, Hepatocellular",Oncology,2023-03-23,NCT05440708,0.261,0.246,0.289,0.015,-0.028,0.01,True
+surzebiclimab,Head and Neck Neoplasms,Oncology,2023-08-02,NCT05909904,0.232,0.246,0.289,-0.014,-0.057,0.01,True
+nisevokitug,Colorectal Neoplasms,Oncology,2021-11-15,NCT04952753,0.232,0.246,0.289,-0.014,-0.057,0.01,True
+orvepitant,Cough,Respiratory,2022-08-01,NCT05185089,0.205,0.219,0.289,-0.014,-0.084,-0.037,True
+ropanicant,"Depressive Disorder, Major",Psychiatry,2024-02-05,NCT06126497,0.281,0.268,0.289,0.013,-0.008,-0.056,False
+felzartamab,Hyperthyroidism,Endocrine,2026-07-30,NCT07722546,0.253,0.266,0.289,-0.013,-0.036,0.021,True
+satralizumab,"Muscular Dystrophy, Duchenne",Neurology,2025-04-04,NCT06450639,0.255,0.268,0.289,-0.013,-0.034,-0.051,False
+infigratinib,Dwarfism,Endocrine,2026-04-23,NCT07393373,0.278,0.266,0.289,0.012,-0.011,0.021,True
+volenrelaxin,Heart Failure,Cardiovascular,2023-02-03,NCT05592275,0.198,0.21,0.289,-0.012,-0.091,0.03,True
+neladalkib,Neoplasm Metastasis,Oncology,2022-06-09,NCT05384626,0.258,0.246,0.289,0.012,-0.031,0.01,True
+muvalaplin,Atherosclerosis,Cardiovascular,2022-11-24,NCT05563246,0.198,0.21,0.289,-0.012,-0.091,0.03,True
+niraparib,Hereditary Sensory and Autonomic Neuropathies,Neurology,2024-10-30,NCT06433219,0.257,0.268,0.289,-0.011,-0.032,-0.051,False
+nipocalimab,Myositis,Neurology,2022-07-05,NCT05379634,0.257,0.268,0.289,-0.011,-0.032,-0.051,False
+idelalisib,Idiopathic Pulmonary Fibrosis,Respiratory,2025-06-20,NCT06736990,0.23,0.219,0.289,0.011,-0.059,-0.037,True
+cemiplimab,Hereditary Sensory and Autonomic Neuropathies,Neurology,2023-09-13,NCT05882734,0.258,0.268,0.289,-0.01,-0.031,-0.051,False
+plamotamab,"Lymphoma, Large B-Cell, Diffuse",Oncology,2022-04-15,NCT05328102,0.256,0.246,0.289,0.01,-0.033,0.01,True
+dibotatug,Enteropathy-Associated T-Cell Lymphoma,Oncology,2022-07-13,NCT05475925,0.237,0.246,0.289,-0.009,-0.052,0.01,True
+avenciguat,"Hypertension, Portal",Cardiovascular,2022-04-27,NCT05161481,0.219,0.21,0.289,0.009,-0.07,0.03,True
+zidesamtinib,Neoplasm Metastasis,Oncology,2022-01-04,NCT05118789,0.237,0.246,0.289,-0.009,-0.052,0.01,True
+pacibekitug,Hyperthyroidism,Endocrine,2024-02-19,NCT06088979,0.257,0.266,0.289,-0.009,-0.032,0.021,True
+ublituximab,Schizophrenia,Psychiatry,2026-07-27,NCT07680946,0.259,0.268,0.289,-0.009,-0.03,-0.056,False
+azetukalner,"Depressive Disorder, Major",Psychiatry,2022-05-19,NCT05376150,0.259,0.268,0.289,-0.009,-0.03,-0.056,False
+liafensine,"Depressive Disorder, Treatment-Resistant",Psychiatry,2022-06-29,NCT05113771,0.259,0.268,0.289,-0.009,-0.03,-0.056,False
+rapcabtagene autoleucel,Vasculitis,Cardiovascular,2025-03-13,NCT06868290,0.202,0.21,0.289,-0.008,-0.087,0.03,True
+naronapride,Diabetes Mellitus,Endocrine,2023-01-03,NCT05621811,0.274,0.266,0.289,0.008,-0.015,0.021,True
+vixarelimab,Idiopathic Pulmonary Fibrosis,Respiratory,2023-05-26,NCT05785624,0.211,0.219,0.289,-0.008,-0.078,-0.037,True
+sitocabnagene loxiveleucel,"Lymphoma, B-Cell",Oncology,2021-11-12,NCT05020015,0.239,0.246,0.289,-0.007,-0.05,0.01,True
+enpatoran,"Lupus Erythematosus, Cutaneous",Autoimmune,2022-03-31,NCT05162586,0.32,0.314,0.289,0.006,0.031,-0.025,True
+resamirigene bilparvovec,Heart Failure,Cardiovascular,2023-10-20,NCT05598333,0.215,0.21,0.289,0.005,-0.074,0.03,True
+obudanersen sodium,Angelman Syndrome,Neurology,2021-12-22,NCT05127226,0.263,0.268,0.289,-0.005,-0.026,-0.051,False
+baxdrostat,Hypertension,Cardiovascular,2022-04-06,NCT05459688,0.205,0.21,0.289,-0.005,-0.084,0.03,True
+elismetrep,Migraine Disorders,Neurology,2025-03-11,NCT06848075,0.264,0.268,0.289,-0.004,-0.025,-0.051,False
+c-188-9,Idiopathic Pulmonary Fibrosis,Respiratory,2023-05-15,NCT05671835,0.223,0.219,0.289,0.004,-0.066,-0.037,True
+exemestane,Hereditary Sensory and Autonomic Neuropathies,Neurology,2023-04-17,NCT05768139,0.264,0.268,0.289,-0.004,-0.025,-0.051,False
+tibulizumab,Autoimmune Diseases,Autoimmune,2025-02-06,NCT06843239,0.31,0.314,0.289,-0.004,0.021,-0.025,True
+alcestobart,Colorectal Neoplasms,Oncology,2023-01-29,NCT05609370,0.25,0.246,0.289,0.004,-0.039,0.01,True
+remzistotug,Head and Neck Neoplasms,Oncology,2023-11-14,NCT06062420,0.249,0.246,0.289,0.003,-0.04,0.01,True
+tebapivat,Myelodysplastic Syndromes,Oncology,2022-11-07,NCT05490446,0.243,0.246,0.289,-0.003,-0.046,0.01,True
+elacestrant,Central Nervous System Diseases,Neurology,2022-08-31,NCT05386108,0.271,0.268,0.289,0.003,-0.018,-0.051,False
+dapagliflozin,Hereditary Sensory and Autonomic Neuropathies,Neurology,2022-04-06,NCT04899349,0.265,0.268,0.289,-0.003,-0.024,-0.051,False
+botensilimab,Colorectal Neoplasms,Oncology,2022-11-30,NCT05608044,0.249,0.246,0.289,0.003,-0.04,0.01,True
+edelinontrine,Cardiovascular Diseases,Cardiovascular,2022-05-26,NCT05409183,0.213,0.21,0.289,0.003,-0.076,0.03,True
+dazukibart,Dermatomyositis,Neurology,2021-12-20,NCT05192200,0.265,0.268,0.289,-0.003,-0.024,-0.051,False
+nemolizumab,"Lung Diseases, Interstitial",Respiratory,2026-02-20,NCT07047690,0.217,0.219,0.289,-0.002,-0.072,-0.037,True
+orilanolimab,Myasthenia Gravis,Oncology,2022-01-01,NCT04982289,0.248,0.246,0.289,0.002,-0.041,0.01,True
+luxdegalutamide,Prostatic Neoplasms,Oncology,2025-07-03,NCT07047118,0.247,0.246,0.289,0.001,-0.042,0.01,True
+lanraplenib,"Leukemia, Myeloid, Acute",Oncology,2022-08-05,NCT05028751,0.245,0.246,0.289,-0.001,-0.044,0.01,True
+trosunilimab,Crohn Disease,Autoimmune,2024-09-04,NCT06548542,0.313,0.314,0.289,-0.001,0.024,-0.025,True

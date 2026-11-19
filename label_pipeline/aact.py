@@ -14,7 +14,7 @@ _READ = dict(sep="|", dtype=str, quoting=csv.QUOTE_NONE, on_bad_lines="skip")
 
 @dataclass(frozen=True)
 class AactTables:
-    trials: pd.DataFrame          # nct_id, phase, level, start, has_us_site
+    trials: pd.DataFrame          # nct_id, phase, level, start, has_us_site, primary_purpose
     interventions: pd.DataFrame   # id, nct_id, name (experimental-arm drugs only)
     other_names: pd.Series        # intervention_id -> list of alternate names
     conditions: pd.DataFrame      # nct_id, mesh_term   (NLM-assigned terms)
@@ -44,6 +44,10 @@ def load(aact_dir: Path) -> AactTables:
     us = set(fac[(fac.country == "United States") & fac.nct_id.isin(ids)].nct_id)
     trials["has_us_site"] = trials.nct_id.isin(us)
 
+    designs = _read(aact_dir, "designs", ["nct_id", "primary_purpose"])
+    purpose = designs.drop_duplicates("nct_id").set_index("nct_id").primary_purpose
+    trials["primary_purpose"] = trials.nct_id.map(purpose)
+
     iv = _read(aact_dir, "interventions", ["id", "nct_id", "intervention_type", "name"])
     iv = iv[iv.nct_id.isin(ids) & iv.intervention_type.isin(DRUG_TYPES)]
     dgi = _read(aact_dir, "design_group_interventions", ["nct_id", "design_group_id", "intervention_id"])
@@ -59,7 +63,7 @@ def load(aact_dir: Path) -> AactTables:
     bc = _read(aact_dir, "browse_conditions", ["nct_id", "mesh_term", "mesh_type"])
     bc = bc[bc.nct_id.isin(ids)].dropna(subset=["mesh_term"])
     return AactTables(
-        trials=trials[["nct_id", "phase", "level", "start", "has_us_site"]].reset_index(drop=True),
+        trials=trials[["nct_id", "phase", "level", "start", "has_us_site", "primary_purpose"]].reset_index(drop=True),
         interventions=iv[["id", "nct_id", "name"]].reset_index(drop=True),
         other_names=other_names,
         conditions=bc[bc.mesh_type == "mesh-list"][["nct_id", "mesh_term"]].drop_duplicates(),

@@ -19,7 +19,10 @@ AREA_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("Ophthalmology", ("eye diseases", "retinal", "macular", "glaucoma", "uveitis")),
     ("Psychiatry", ("mental disorders", "depressive", "schizophrenia", "bipolar", "anxiety", "substance-related",
                     "attention deficit")),
-    ("Neurology", ("nervous system diseases", "alzheimer", "parkinson", "epilepsy", "migraine", "neuralgia", "pain")),
+    # Bare "pain" is NOT a Neurology marker: Chest/Abdominal/Back Pain are not CNS programs and were
+    # being dumped into Neurology. Keep neuralgia / migraine / neuropathy-style terms instead.
+    ("Neurology", ("nervous system diseases", "alzheimer", "parkinson", "epilepsy", "migraine", "neuralgia",
+                   "neuropathy", "neuropathic", "amyotrophic", "huntington", "dementia")),
     ("Cardiovascular", ("cardiovascular diseases", "heart", "hypertension", "vascular diseases", "atrial fibrillation",
                         "thrombosis", "stroke")),
     ("Endocrine", ("diabetes", "endocrine system diseases", "thyroid", "growth disorders", "hypogonadism")),

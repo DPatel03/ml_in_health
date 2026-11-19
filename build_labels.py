@@ -118,6 +118,11 @@ def run(a: Args) -> dict[str, object]:
     results["window_sensitivity"] = window_sensitivity(transitions, tables.snapshot, a)
 
     a.out_dir.mkdir(parents=True, exist_ok=True)
+    # quoting=csv.QUOTE_MINIMAL is default; escape any leftover control chars before write
+    for col in labeled.select_dtypes(include="object").columns:
+        labeled[col] = labeled[col].map(lambda x: x.replace("\x00", "") if isinstance(x, str) else x)
+    for col in trial_drugs.select_dtypes(include="object").columns:
+        trial_drugs[col] = trial_drugs[col].map(lambda x: x.replace("\x00", "") if isinstance(x, str) else x)
     trial_drugs.to_csv(a.out_dir / "trial_drugs.csv", index=False)
     labeled.to_csv(a.out_dir / "transitions.csv", index=False)
     for name, df in results.items():

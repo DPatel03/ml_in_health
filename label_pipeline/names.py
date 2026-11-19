@@ -20,11 +20,17 @@ _DOSE = re.compile(r"\b\d+([.,]\d+)?\s*(mg/kg|mg/m2|mg/m²|mcg/kg|mg/ml|mg|mcg|�
 _LONE_NUMBER = re.compile(r"(?<![a-z0-9-])\d+([.,]\d+)?(?![a-z0-9-])", re.I)
 _PREFIX = re.compile(r"^(n|l|d|dl|\[1[14]c\]|1[14]c)[- ]", re.I)  # n-acetylcysteine, l-arginine, [14C]-labelled drug
 _BIOSIMILAR_SUFFIX = re.compile(r"-[a-z]{4}$")  # rituximab-abbs
-_COMBINATION = re.compile(r"\+| and | with |/|,|;|\bplus\b|regimen|\bfolfox|\bfolfiri|\br-?chop\b|\bchop\b", re.I)
+# Bare "," is NOT here: "Zoster Vaccine, Live", "UK-390,957", "Cream, 2%" are single products.
+# Multi-drug comma lists are handled in is_combination() after stripping dose/form noise.
+_COMBINATION = re.compile(r"\+| and | with |/|;|\bplus\b|regimen|\bfolfox|\bfolfiri|\br-?chop\b|\bchop\b", re.I)
+_FORMULATION_NOISE = re.compile(
+    r"\b(live|inactivated|adjuvanted|recombinant|humanized|conjugated|vaccine|suspension|solution|"
+    r"ointment|cream|gel|tablet|tablets|capsule|capsules|injection|spray|foam|vehicle)\b", re.I)
 _NOT_A_DRUG = re.compile(
     r"placebo|saline|vehicle|sham|sugar pill|standard of care|best supportive care|usual care|chemotherapy$|"
     r"^control$|^drug$|^study drug$|investigational product", re.I)
 _RESEARCH_CODE = re.compile(r"^[a-z]{1,6}\d{3,}[a-z0-9]*$")
+_NAME_LIKE = re.compile(r"[A-Za-z]{3,}")
 
 
 def compact(name: str) -> str:
@@ -43,7 +49,18 @@ def strip_biosimilar_suffix(name: str) -> str:
 
 
 def is_combination(name: str) -> bool:
-    return bool(_COMBINATION.search(str(name)))
+    """True for multi-drug regimens. Commas alone are not enough — strip doses/forms first so
+    'Zoster Vaccine, Live' and 'AN2728 Cream, 2%' stay single drugs, while
+    'belinostat, carboplatin, paclitaxel' still counts as a combination."""
+    s = str(name)
+    if _COMBINATION.search(s):
+        return True
+    cleaned = re.sub(r"\(.*?\)|\[.*?\]", " ", s)
+    cleaned = _FORMS.sub(" ", _DOSE.sub(" ", cleaned))
+    cleaned = _FORMULATION_NOISE.sub(" ", cleaned)
+    parts = [p.strip() for p in cleaned.split(",") if p.strip()]
+    name_like = [p for p in parts if _NAME_LIKE.search(p)]
+    return len(name_like) >= 2
 
 
 def is_not_a_drug(name: str) -> bool:

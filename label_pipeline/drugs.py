@@ -68,6 +68,18 @@ def build_resolver(chembl_index: dict[str, str], chembl_names: dict[str, str], f
                     fda_names=dict(zip(fda_only.fda_id, fda_only.ingredient.str.lower())))
 
 
+def build_phase1_resolver(chembl_index: dict[str, str], chembl_names: dict[str, str], fda: pd.DataFrame) -> Resolver:
+    # FDA may know a brand that ChEMBL lists only under its ingredient name.
+    # Bridge aliases only when the FDA ingredient has one unambiguous ChEMBL owner.
+    matched = fda.assign(chembl_id=fda.key.map(chembl_index)).dropna(subset=["chembl_id"])
+    owners = matched.groupby("fda_id").chembl_id
+    unique = owners.first()[owners.nunique() == 1]
+    resolved_ids = fda.fda_id.map(unique).fillna(fda.fda_id)
+    return Resolver(chembl_index=chembl_index, chembl_names=chembl_names,
+                    fda_index=dict(zip(fda.key, resolved_ids)),
+                    fda_names=dict(zip(fda.fda_id, fda.ingredient.str.lower())))
+
+
 def approval_dates(resolver: Resolver, fda: pd.DataFrame) -> pd.Series:
     """Earliest FDA approval per drug_id (ChEMBL or FDA IDs)."""
     ids = [resolver.chembl_index.get(k) or resolver.fda_index.get(k) for k in fda.key]

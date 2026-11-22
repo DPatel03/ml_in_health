@@ -42,3 +42,15 @@ def area_for(terms: Iterable[str]) -> str:
         if any(m in text for m in markers):
             return area
     return "Others"
+
+
+def phase1_area(terms: set[str], ancestors: set[str]) -> str:
+    """Prefer the listed condition over broad MeSH ancestors on a Phase 1 entry trial."""
+    for candidates in (terms, ancestors):
+        description = " | ".join(t.lower() for t in candidates)
+        for area, markers in AREA_RULES:
+            if area == "Autoimmune":
+                markers = ("autoimmune", "myasthenia gravis", *markers)
+            if any(marker in description for marker in markers):
+                return area
+    return "Others" if terms or ancestors else "Unknown"

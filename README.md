@@ -5,17 +5,25 @@ Investors value biotech drugs using fixed success rates from one industry table 
 ## Status
 
 - **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. Phase 2 → 3 is now one row per drug × BIO disease area (MeSH basket duplicates and indication-blind FDA approvals removed). Phase 2 → 3 model retrained on that label (LightGBM + genetic evidence); still beats BIO's area table. Mispricing watchlist and rNPV illustration regenerated on the cleaned pending set.
-- **Next:** Purple Book for biologics (would also fix the label gap the watchlist ran into below), match approvals to their disease, more drug-level features (FDA designations, endpoint type), the other two transitions.
+- **Next:** Purple Book for biologics (would also fix the label gap the watchlist ran into below), match approvals to their disease, more drug-level features (FDA designations, endpoint type), the approval model and further validation of the Phase 1 model.
 
 ## Label v1 vs BIO 2021
 
 | Step | Our label | BIO 2021 | Labeled examples |
 |---|---|---|---|
-| Phase 1 → 2 | 51.8% | 52.0% | 1,249 |
+| Phase 1 → 2 | 51.3% | 52.0% | 1,248 |
 | Phase 2 → 3 | 23.0% | 28.9% | 3,087 |
 | Phase 3 → approval | 41.1% | 52.4% | 834 |
 
 Phase 2 → 3 is lower than older MeSH-level figures on purpose (see `LABEL_RULES.md`). At a 7-year window it is ~29%, near BIO. Phase 3 → approval is close for cancer (~41% vs 43.9%) but low overall because vaccines and blood products aren't in Drugs@FDA.
+
+## Phase 1 → 2
+
+The October 8, 2026 snapshot contains 1,248 eligible drugs with five years of follow-up. Of these, 51.3% reached a later Phase 2 or higher trial within five years. The Phase 1 label file records one entry per drug, excludes unstarted or withdrawn trials, and uses the earliest observed qualifying next trial. When trials start on the same day, the lowest NCT ID supplies the primary purpose and any US site qualifies.
+
+The logistic model trained on 426 entries whose five-year windows closed before January 1, 2016. On 440 later entries, its Brier score was 0.2705 versus 0.2456 for BIO's disease-area rates. Lower is better. The model had 10.1% higher error in this test.
+
+Run `python3 build_phase1_model.py` to reproduce the scores and calibration plot from the committed inputs. To regenerate the Phase 1 labels from the raw files listed below, run `python3 build_phase1_labels.py` first. The evaluation uses the frozen sponsor history for these entry trials. Each value reflects sponsor outcomes from earlier programs whose observation windows had closed before entry, with shrinkage toward the market rate. The Phase 1 snapshot and results are in [phase1_to_phase2.csv](output/labels/phase1_to_phase2.csv) and [results_phase1_to_phase2.csv](output/model/results_phase1_to_phase2.csv). These files supersede the Phase 1 rows in the older combined exports.
 
 ## Phase 2 → 3 model
 

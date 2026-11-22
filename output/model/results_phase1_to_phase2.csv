@@ -1,0 +1,4 @@
+transition,model,n_train,n_test,train_years,test_years,train_rate,test_rate,model_brier,benchmark,benchmark_brier,skill,model_minus_benchmark,ci_low,ci_high
+phase1_to_phase2,logistic,426,440,2005-2010,2016-2021,0.5446,0.4705,0.2705,BIO by area,0.2456,-0.1013,0.0249,0.0074,0.0433
+phase1_to_phase2,logistic,426,440,2005-2010,2016-2021,0.5446,0.4705,0.2705,BIO flat rate,0.2516,-0.0753,0.0189,0.0019,0.0371
+phase1_to_phase2,logistic,426,440,2005-2010,2016-2021,0.5446,0.4705,0.2705,train-years area rate,0.2599,-0.0408,0.0106,-0.0073,0.0289

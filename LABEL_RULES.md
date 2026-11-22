@@ -63,11 +63,11 @@ A name that points at two different drugs is skipped, never guessed.
 
 | Step | Our v1 rate (n) | BIO 2021 | Gap |
 |---|---|---|---|
-| Phase 1 → 2 | 51.8% (1,249) | 52.0% | −0.2 |
+| Phase 1 → 2 | 51.3% (1,248) | 52.0% | −0.7 |
 | Phase 2 → 3 | 23.0% (3,087) | 28.9% | −5.9 |
 | Phase 3 → approval | 41.1% (834) | 52.4% | −11.2 |
 
-Phase 1 → 2 still tracks BIO. Phase 2 → 3 is lower than the old MeSH-exploded / approval-polluted figure on purpose. With a 7-year window it is 29.2% (≈ BIO 28.9%); the 5-year default is kept for now so every step uses the same clock except the known +2 years for approval review.
+The refreshed Phase 1 rows are in `output/labels/phase1_to_phase2.csv`. Phase 1 → 2 still tracks BIO. Phase 2 → 3 is lower than the old MeSH-exploded / approval-polluted figure on purpose. With a 7-year window it is 29.2% (≈ BIO 28.9%); the 5-year default is kept for now so every step uses the same clock except the known +2 years for approval review.
 
 Phase 3 → approval for oncology is close to BIO (41.1% vs 43.9%). Most of the remaining gap is in non-oncology:
 - Vaccines, blood-clotting factors and other products regulated by FDA's CBER center aren't in Drugs@FDA, so their approvals are missed. Hematology is the clearest case: 19% for us vs 72% for BIO.

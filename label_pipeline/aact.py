@@ -29,10 +29,22 @@ def _read(aact_dir: Path, table: str, cols: list[str]) -> pd.DataFrame:
     return pd.read_csv(path, usecols=cols, **_READ)
 
 
-def load(aact_dir: Path) -> AactTables:
-    studies = _read(aact_dir, "studies", ["nct_id", "study_type", "phase", "start_date", "study_first_submitted_date"])
+def started_trials(studies: pd.DataFrame) -> tuple[pd.DataFrame, pd.Timestamp]:
+    """Use the export's latest submission as its observation cutoff."""
     snapshot = pd.to_datetime(studies.study_first_submitted_date, errors="coerce").max()
-    studies["start"] = pd.to_datetime(studies.start_date, errors="coerce")
+    start = pd.to_datetime(studies.start_date, errors="coerce")
+    observed = start.le(snapshot) & ~studies.overall_status.isin(["WITHDRAWN", "NOT_YET_RECRUITING"])
+    return studies.loc[observed].assign(start=start[observed]), snapshot
+
+
+def load(aact_dir: Path, observed_starts_only: bool = True) -> AactTables:
+    studies = _read(aact_dir, "studies", ["nct_id", "study_type", "phase", "start_date",
+                                          "study_first_submitted_date", "overall_status"])
+    if observed_starts_only:
+        studies, snapshot = started_trials(studies)
+    else:
+        snapshot = pd.to_datetime(studies.study_first_submitted_date, errors="coerce").max()
+        studies["start"] = pd.to_datetime(studies.start_date, errors="coerce")
     sponsors = _read(aact_dir, "sponsors", ["nct_id", "agency_class", "lead_or_collaborator"])
     industry = set(sponsors[(sponsors.lead_or_collaborator == "lead") & (sponsors.agency_class == "INDUSTRY")].nct_id)
     trials = studies[(studies.study_type == "INTERVENTIONAL") & studies.phase.isin(PHASE_LEVEL)

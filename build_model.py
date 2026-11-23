@@ -1,17 +1,4 @@
-"""Baselines for all three steps (Phase 1 -> 2, Phase 2 -> 3, Phase 3 -> approval): join trial design features
-onto the label pipeline's output, train one logistic regression per step, and score it against BIO 2021's flat
-and phase x disease-area rates.
-
-Needs output/model/trial_design_features.csv (from build_features.py) and output/labels/transitions.csv
-(from build_labels.py).
-
-Usage:
-    python3 build_model.py                                  # all three steps -> output/model/
-    python3 build_model.py --transition phase2_to_phase3
-    # robustness runs: write somewhere else so the committed results aren't overwritten
-    python3 build_model.py --train-end 2010 --out-dir /tmp/embargo         # every training outcome known by 2015
-    python3 build_model.py --train-end 2012 --test-start 2013 --test-end 2015 --out-dir /tmp/early
-"""
+"""Train and evaluate separate models for the three clinical development transitions."""
 from __future__ import annotations
 
 import argparse
@@ -24,6 +11,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import StratifiedGroupKFold, cross_val_predict
+from lightgbm import LGBMClassifier
 from sklearn.calibration import calibration_curve
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -33,25 +22,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from label_pipeline import bio
-from label_pipeline.labels import TRANSITIONS
+from label_pipeline.labels import TRANSITIONS, window_end
 
 HERE = Path(__file__).resolve().parent
 TITLES = {"phase1_to_phase2": "Phase 1 → 2", "phase2_to_phase3": "Phase 2 → 3",
           "phase3_to_approval": "Phase 3 → approval"}
 
-# num_facilities / num_countries / has_us_site dropped: AACT stores the final site list, not what was
-# registered when the phase started, so they'd leak how the trial actually played out (Deep's note).
-# log_enrollment dropped too: it's only kept where enrollment_type is ESTIMATED, which is ~5% of
-# training rows but ~16% of test rows, and trials still carrying an estimate advance less often
-# (8-15% vs 26-27%). Median-imputing the rest made the few real values extreme outliers, which
-# drove the overconfident top fifth (predicted ~50%, actual ~23%).
-# has_sponsor_history: about half of programs come from sponsors with no known outcomes yet; without the
-# flag, median imputation would treat them as an average sponsor.
+# Registry site counts and final enrollment can incorporate post-entry updates.
 NUMERIC = ["number_of_arms", "sponsor_track_record", "has_sponsor_history"]
-# phase = entry trial's phase. Phase 1/2 trials count as reaching Phase 2 but advance less often
-# (21-24% vs 27%), and their share doubles from train (24%) to test (47%). Phase 2/3 vs Phase 3
-# plays the same role for the approval step (16-30% vs 44% approved); it's constant (Phase 1) for the first step.
-CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area"]
+CATEGORICAL = ["phase", "allocation", "intervention_model", "masking", "disease_area", "primary_purpose"]
 N_BOOT = 2000
 # Pseudo-programs pulling a sponsor's track record toward the market-wide rate, so a sponsor with one or two
 # closed programs doesn't score 0% or 100%. Validation Brier (train <= 2012, validate 2013-15) is flat for
@@ -81,18 +60,30 @@ def normalize_sponsor(name: str) -> str:
     return " ".join(stripped or tokens)
 
 
+def join_trial_features(features: pd.DataFrame, programs: pd.DataFrame) -> pd.DataFrame:
+    df = programs.merge(features, left_on="entry_nct_id", right_on="nct_id", how="left",
+                        validate="many_to_one", indicator=True)
+    if df._merge.ne("both").any():
+        raise ValueError("Missing entry trial features. Rebuild features from the same AACT snapshot.")
+    df = df.drop(columns="_merge")
+    df["sponsor"] = df.lead_sponsor_name.map(normalize_sponsor, na_action="ignore")
+    return df.sort_values("entry_date").reset_index(drop=True)
+
+
+def build_sponsor_pool(features: pd.DataFrame, transitions: pd.DataFrame) -> pd.DataFrame:
+    pool = join_trial_features(features, transitions[transitions.in_v1_label_set & transitions.label.notna()])
+    pool["sponsor_track_record"] = sponsor_track_record(pool)
+    pool["has_sponsor_history"] = pool.sponsor_track_record.notna().astype(float)
+    return pool
+
+
 def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame, transition: str,
                            train_end: int = 2015, test_start: int = 2016, test_end: int | None = None) -> pd.DataFrame:
-    t = transitions[(transitions.transition == transition) & transitions.in_v1_label_set & transitions.label.notna()]
+    pool = build_sponsor_pool(features, transitions)
+    return split_programs(pool[pool.transition == transition].copy(), train_end, test_start, test_end)
 
-    # exact entry trial per row (drug + disease for Phase 2 -> 3, drug otherwise), from Deep's entry_nct_id
-    df = t.merge(features, left_on="entry_nct_id", right_on="nct_id", how="inner", validate="many_to_one")
-    df["sponsor"] = df.lead_sponsor_name.map(normalize_sponsor, na_action="ignore")
 
-    df = df.sort_values("entry_date").reset_index(drop=True)
-    df["sponsor_track_record"] = sponsor_track_record(df)
-    df["has_sponsor_history"] = df.sponsor_track_record.notna().astype(float)
-
+def split_programs(df: pd.DataFrame, train_end: int, test_start: int, test_end: int | None) -> pd.DataFrame:
     # time split: train on entries up to train_end, test on test_start+, and keep every program of the
     # same drug on one side (LABEL_RULES.md #8). A drug that started before test_start has its later
     # programs dropped rather than split across sides. With train_end < test_start - window, every
@@ -100,7 +91,8 @@ def build_program_features(features: pd.DataFrame, transitions: pd.DataFrame, tr
     year = df.entry_date.dt.year
     drug_min_year = df.drug_id.map(df.groupby("drug_id").entry_date.min().dt.year)
     in_test = (drug_min_year >= test_start) & (year <= (test_end if test_end is not None else year.max()))
-    df["split"] = np.select([year <= train_end, in_test], ["train", "test"], "dropped")
+    mature = window_end(df.entry_date, df.window_years) < pd.Timestamp(test_start, 1, 1)
+    df["split"] = np.select([(year <= train_end) & mature, in_test], ["train", "test"], "dropped")
     return df[df.split != "dropped"].reset_index(drop=True)
 
 
@@ -112,24 +104,24 @@ def _known_before(known: np.ndarray, labels: np.ndarray, at: np.ndarray) -> tupl
     return n, cum[n]
 
 
-def sponsor_track_record(df: pd.DataFrame, k: float = SHRINK_K) -> np.ndarray:
-    """That sponsor's label rate on programs whose window had closed before this one entered, shrunk toward
-    the market-wide rate on the same basis: (successes + k * market) / (closed + k). NaN when the sponsor has
-    no closed programs yet. Same transition only, for now -- broaden to all three transitions later.
-
-    A program counts once its window closes (entry + window_years), success or not. Counting successes on
-    next_date instead is still time-safe, but failures only surface years later, so the rate is inflated
-    by however many programs are still in flight: before 2010 every known outcome was a success and every
-    sponsor with history scored 100% (train mean 0.83 vs 0.63 in test for Phase 1 -> 2)."""
-    known = df.entry_date + pd.to_timedelta(df.window_years * 365.25, unit="D")
-    known, y, entry = known.to_numpy(), df.label.to_numpy(), df.entry_date.to_numpy()
+def sponsor_track_record(df: pd.DataFrame, k: float = SHRINK_K, targets: pd.DataFrame | None = None) -> np.ndarray:
+    """Pool all transitions, counting successes and failures only after their entire windows close."""
+    if targets is None:
+        targets = df
+    known = window_end(df.entry_date, df.window_years).to_numpy()
+    y = df.label.to_numpy()
+    entry = targets.entry_date.to_numpy()
     n_all, s_all = _known_before(known, y, entry)
-    market = np.divide(s_all, n_all, out=np.full(len(df), np.nan), where=n_all > 0)
-    track_record = np.full(len(df), np.nan)
-    for _, idx in df.groupby("sponsor").indices.items():
-        n, s = _known_before(known[idx], y[idx], entry[idx])
-        # n > 0 implies n_all > 0, so market is defined wherever it's used
-        track_record[idx] = np.divide(s + k * market[idx], n + k, out=np.full(len(idx), np.nan), where=n > 0)
+    market = np.divide(s_all, n_all, out=np.full(len(targets), np.nan), where=n_all > 0)
+    track_record = np.full(len(targets), np.nan)
+    histories = df.groupby("sponsor").indices
+    for sponsor, idx in targets.groupby("sponsor").indices.items():
+        if sponsor not in histories:
+            continue
+        history = histories[sponsor]
+        n, successes = _known_before(known[history], y[history], entry[idx])
+        track_record[idx] = np.divide(successes + k * market[idx], n + k,
+                                      out=np.full(len(idx), np.nan), where=n > 0)
     return track_record
 
 
@@ -158,18 +150,41 @@ def clustered_bootstrap_ci(diff: np.ndarray, groups: np.ndarray, n_boot: int = N
     return tuple(np.percentile(means, [2.5, 97.5]))
 
 
-def fit_and_evaluate(df: pd.DataFrame, bio_flat: float, bio_area: pd.Series) -> dict:
+def make_model(kind: str, numeric: list[str] = NUMERIC) -> Pipeline:
     pre = ColumnTransformer([
-        ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
+        ("num", Pipeline([("impute", SimpleImputer(strategy="median", keep_empty_features=True)), ("scale", StandardScaler())]), numeric),
         ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
     ])
-    model = Pipeline([("pre", pre), ("clf", LogisticRegression(max_iter=1000))])
+    clf = (LogisticRegression(max_iter=1000) if kind == "logistic" else
+           LGBMClassifier(n_estimators=300, num_leaves=3, min_child_samples=40, learning_rate=0.10,
+                           reg_lambda=1.0, verbosity=-1, n_jobs=1, random_state=0))
+    return Pipeline([("pre", pre), ("clf", clf)])
 
+
+def log_odds(probabilities: np.ndarray) -> np.ndarray:
+    p = np.clip(probabilities, 1e-6, 1 - 1e-6)
+    return np.log(p / (1 - p)).reshape(-1, 1)
+
+
+def fit_calibrator(model: Pipeline, train: pd.DataFrame, columns: list[str]) -> LogisticRegression:
+    folds = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=0)
+    oof = cross_val_predict(model, train[columns], train.label, groups=train.drug_id,
+                            cv=folds, method="predict_proba")[:, 1]
+    recent = train.entry_date.dt.year >= train.entry_date.dt.year.max() - 4
+    return LogisticRegression().fit(log_odds(oof[recent]), train.label[recent])
+
+
+def fit_and_evaluate(df: pd.DataFrame, bio_flat: float, bio_area: pd.Series, kind: str = "logistic") -> dict:
+    numeric = NUMERIC + (["genetic_evidence_score"] if "genetic_evidence_score" in df else [])
+    columns = numeric + CATEGORICAL
+    model = make_model(kind, numeric)
     train, test = df[df.split == "train"], df[df.split == "test"]
     if train.label.nunique() < 2 or test.empty:
         raise ValueError(f"not enough data to fit: {len(train)} train / {len(test)} test rows")
-    model.fit(train[NUMERIC + CATEGORICAL], train.label)
-    proba = model.predict_proba(test[NUMERIC + CATEGORICAL])[:, 1]
+    model.fit(train[columns], train.label)
+    proba = model.predict_proba(test[columns])[:, 1]
+    if kind == "lightgbm":
+        proba = fit_calibrator(model, train, columns).predict_proba(log_odds(proba))[:, 1]
     frac_pos, mean_pred = calibration_curve(test.label, proba, n_bins=5, strategy="quantile")
 
     # our own training-years rate by disease area: the fairest baseline, since it's scored on the same
@@ -191,7 +206,7 @@ def fit_and_evaluate(df: pd.DataFrame, bio_flat: float, bio_area: pd.Series) -> 
                     "diff_ci": (lo, hi)}
 
     return {
-        "n_train": len(train), "n_test": len(test),
+        "model": kind, "n_train": len(train), "n_test": len(test),
         "train_years": (int(train.entry_date.dt.year.min()), int(train.entry_date.dt.year.max())),
         "test_years": (int(test.entry_date.dt.year.min()), int(test.entry_date.dt.year.max())),
         "train_positive_rate": train.label.mean(), "test_positive_rate": test.label.mean(),
@@ -208,7 +223,7 @@ def plot_calibration(results: dict, transition: str, out: Path) -> None:
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.plot([0, 1], [0, 1], "k--", linewidth=1, label="perfectly calibrated")
     xs, ys = zip(*results["calibration_curve"])
-    ax.plot(xs, ys, "o-", label="logistic regression (ours)")
+    ax.plot(xs, ys, "o-", label=results["model"])
     ax.plot(results["bio_flat"], results["test_positive_rate"], "s", color="tab:orange", markersize=9,
             label=f"BIO 2021 flat rate ({results['bio_flat']:.3f})")
     ax.set_xlabel("Mean predicted probability")
@@ -225,7 +240,7 @@ def plot_calibration(results: dict, transition: str, out: Path) -> None:
 
 
 def results_rows(transition: str, r: dict) -> list[dict]:
-    base = {"transition": transition, "n_train": r["n_train"], "n_test": r["n_test"],
+    base = {"transition": transition, "model": r["model"], "n_train": r["n_train"], "n_test": r["n_test"],
             "train_years": "-".join(map(str, r["train_years"])), "test_years": "-".join(map(str, r["test_years"])),
             "train_rate": round(r["train_positive_rate"], 4), "test_rate": round(r["test_positive_rate"], 4),
             "model_brier": round(r["brier_model"], 4)}
@@ -252,6 +267,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--features", type=Path, default=HERE / "output" / "model" / "trial_design_features.csv")
     p.add_argument("--transitions", type=Path, default=HERE / "output" / "labels" / "transitions.csv")
     p.add_argument("--bio", type=Path, default=HERE / "external" / "bio" / "bio2021_phase_transitions.csv")
+    p.add_argument("--model", choices=["logistic", "lightgbm"], help="override the default for the selected steps")
+    p.add_argument("--genetic-evidence", type=Path, help="optional retrospective Phase 2 feature CSV")
     p.add_argument("--out-dir", type=Path, default=HERE / "output" / "model")
     p.add_argument("--transition", choices=TRANSITIONS, action="append",
                    help="step to model (repeatable); default: all three")
@@ -276,11 +293,16 @@ def main(argv: list[str] | None = None) -> int:
     transitions = pd.read_csv(a.transitions, parse_dates=["entry_date", "next_date"], low_memory=False)
     a.out_dir.mkdir(parents=True, exist_ok=True)
 
+    pool = build_sponsor_pool(features, transitions)
     rows = []
-    for transition in a.transition or TRANSITIONS:
-        df = build_program_features(features, transitions, transition, a.train_end, a.test_start, a.test_end)
+    for transition in dict.fromkeys(a.transition or TRANSITIONS):
+        df = split_programs(pool[pool.transition == transition].copy(), a.train_end, a.test_start, a.test_end)
+        kind = a.model or ("lightgbm" if transition == TRANSITIONS[1] else "logistic")
+        if a.genetic_evidence and transition == TRANSITIONS[1]:
+            scores = pd.read_csv(a.genetic_evidence).set_index("drug_id").genetic_evidence_score
+            df["genetic_evidence_score"] = df.drug_id.map(scores)
         try:
-            results = fit_and_evaluate(df, *load_bio_rates(a.bio, transition))
+            results = fit_and_evaluate(df, *load_bio_rates(a.bio, transition), kind=kind)
         except ValueError as exc:
             print(f"error: {TITLES[transition]}: {exc}", file=sys.stderr)
             return 1
@@ -288,7 +310,8 @@ def main(argv: list[str] | None = None) -> int:
         plot_calibration(results, transition, a.out_dir / f"calibration_{transition}.png")
         rows += results_rows(transition, results)
 
-    out = a.out_dir / "baseline_results.csv"
+    filename = "baseline_results.csv" if not a.transition else "results_" + "_".join(dict.fromkeys(a.transition)) + ".csv"
+    out = a.out_dir / filename
     pd.DataFrame(rows).to_csv(out, index=False)
     print(f"\nwrote {out}")
     return 0

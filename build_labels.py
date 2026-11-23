@@ -56,8 +56,8 @@ def parse_args(argv: list[str] | None = None) -> Args:
     p.add_argument("--first-entry-year", type=int, default=2005)
     p.add_argument("--fetch-chembl", action="store_true", help="re-download the ChEMBL dictionary")
     a = p.parse_args(argv)
-    if a.window_years < 1 or a.approval_extra_years < 0:
-        p.error("--window-years must be >= 1 and --approval-extra-years >= 0")
+    if min([a.window_years, *a.sensitivity]) < 1 or a.approval_extra_years < 0:
+        p.error("All success windows must be >= 1 and --approval-extra-years >= 0")
     return Args(a.aact_dir, a.fda_dir, a.chembl_file, a.bio_pdf, a.bio_csv, a.out_dir, a.window_years,
                 a.approval_extra_years, tuple(a.sensitivity), a.first_entry_year, a.fetch_chembl)
 
@@ -93,7 +93,8 @@ def window_sensitivity(transitions: pd.DataFrame, snapshot: pd.Timestamp, a: Arg
         cfg = labels.LabelConfig(snapshot=snapshot, window_years=w, approval_extra_years=a.approval_extra_years,
                                  first_entry_year=a.first_entry_year)
         labeled = labels.apply_window(transitions, cfg)
-        rows.append(labels.success_rates(labeled[labeled.in_v1_label_set]).assign(window_years=w))
+        rows.append(labels.success_rates(labeled[labeled.in_v1_label_set]).assign(window_years=w,
+                    effective_window_years=lambda rates: rates.transition.map(cfg.years_for)))
     return pd.concat(rows).round({"our_rate": 3})
 
 

@@ -61,11 +61,16 @@ class Resolver:
 
 
 def build_resolver(chembl_index: dict[str, str], chembl_names: dict[str, str], fda: pd.DataFrame) -> Resolver:
-    # FDA keys that ChEMBL already knows are resolved through ChEMBL, so one drug never gets two IDs
-    fda_only = fda[~fda.key.isin(chembl_index.keys())]
+    # FDA may know a brand that ChEMBL lists only under its ingredient name.
+    # Bridge aliases only when the FDA ingredient has one unambiguous ChEMBL owner.
+    matched = fda.assign(chembl_id=fda.key.map(chembl_index)).dropna(subset=["chembl_id"])
+    owners = matched.groupby("fda_id").chembl_id
+    unique = owners.first()[owners.nunique() == 1]
+    resolved_ids = fda.fda_id.map(unique).fillna(fda.fda_id)
     return Resolver(chembl_index=chembl_index, chembl_names=chembl_names,
-                    fda_index=dict(zip(fda_only.key, fda_only.fda_id)),
-                    fda_names=dict(zip(fda_only.fda_id, fda_only.ingredient.str.lower())))
+                    fda_index=dict(zip(fda.key, resolved_ids)),
+                    fda_names=dict(zip(fda.fda_id, fda.ingredient.str.lower())))
+
 
 
 def approval_dates(resolver: Resolver, fda: pd.DataFrame) -> pd.Series:
@@ -98,3 +103,15 @@ def map_trial_drugs(aact: AactTables, resolver: Resolver) -> tuple[pd.DataFrame,
              **{f"matched_{k}": int(v) for k, v in df.source.value_counts().items()}}
     log.info("Trial-drug rows: %s; %s", len(df), stats)
     return df, stats
+
+
+def build_phase1_resolver(chembl_index: dict[str, str], chembl_names: dict[str, str], fda: pd.DataFrame) -> Resolver:
+    # FDA may know a brand that ChEMBL lists only under its ingredient name.
+    # Bridge aliases only when the FDA ingredient has one unambiguous ChEMBL owner.
+    matched = fda.assign(chembl_id=fda.key.map(chembl_index)).dropna(subset=["chembl_id"])
+    owners = matched.groupby("fda_id").chembl_id
+    unique = owners.first()[owners.nunique() == 1]
+    resolved_ids = fda.fda_id.map(unique).fillna(fda.fda_id)
+    return Resolver(chembl_index=chembl_index, chembl_names=chembl_names,
+                    fda_index=dict(zip(fda.key, resolved_ids)),
+                    fda_names=dict(zip(fda.fda_id, fda.ingredient.str.lower())))

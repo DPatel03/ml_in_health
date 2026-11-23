@@ -62,10 +62,10 @@ def test_track_record_shrinks_toward_market_rate_known_at_entry():
 
 def _split_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
     rows = [  # drug, entry year, in label set, label
-        ("X", 2014, True, 1.0), ("X", 2017, True, 0.0),   # older drug: 2017 program must not land in test
+        ("X", 2010, True, 1.0), ("X", 2017, True, 0.0),   # older drug: 2017 program must not land in test
         ("Y", 2017, True, 1.0), ("Y", 2020, True, 0.0),
-        ("Z", 2012, True, 0.0),
-        ("Q", 2013, False, 1.0), ("R", 2013, True, np.nan),  # out of the label set / pending
+        ("Z", 2009, True, 0.0),
+        ("LATE", 2015, True, 0.0), ("Q", 2013, False, 1.0), ("R", 2013, True, np.nan),  # out of the label set / pending
     ]
     transitions = pd.DataFrame({
         "transition": "phase2_to_phase3",
@@ -85,16 +85,16 @@ def test_split_keeps_each_drug_on_one_side():
     features, transitions = _split_inputs()
     df = bm.build_program_features(features, transitions, "phase2_to_phase3")
     got = {(d, y): s for d, y, s in zip(df.drug_id, df.entry_date.dt.year, df.split)}
-    assert got == {("X", 2014): "train", ("Z", 2012): "train", ("Y", 2017): "test", ("Y", 2020): "test"}
+    assert got == {("X", 2010): "train", ("Z", 2009): "train", ("Y", 2017): "test", ("Y", 2020): "test"}
     assert (df.sponsor == "acme").all()
 
 
 def test_split_embargo_and_test_end():
     features, transitions = _split_inputs()
-    df = bm.build_program_features(features, transitions, "phase2_to_phase3", train_end=2012, test_start=2016,
+    df = bm.build_program_features(features, transitions, "phase2_to_phase3", train_end=2009, test_start=2016,
                                    test_end=2018)
     got = {(d, y): s for d, y, s in zip(df.drug_id, df.entry_date.dt.year, df.split)}
-    assert got == {("Z", 2012): "train", ("Y", 2017): "test"}
+    assert got == {("Z", 2009): "train", ("Y", 2017): "test"}
 
 
 def test_bio_phase3_rate_is_phase3_to_filing_times_filing_to_approval():
@@ -102,3 +102,21 @@ def test_bio_phase3_rate_is_phase3_to_filing_times_filing_to_approval():
                                       "phase3_to_approval")
     assert flat == pytest.approx(0.578 * 0.906)
     assert by_area["Oncology"] == pytest.approx(0.477 * 0.92)
+
+
+def test_approval_training_window_must_close_before_test_start():
+    df = pd.DataFrame({"drug_id": list("abcd"), "window_years": [7] * 4,
+                       "entry_date": pd.to_datetime(["2008-12-31", "2009-01-01", "2015-01-01", "2016-01-01"])})
+    split = bm.split_programs(df, 2015, 2016, None)
+    assert dict(zip(split.drug_id, split.split)) == {"a": "train", "d": "test"}
+
+
+def test_watchlist_excludes_already_observed_phase3():
+    from build_watchlist import build_pending_features
+
+    features, transitions = _split_inputs()
+    transitions["outcome"] = "pending"
+    transitions["next_date"] = D("2024-01-01")
+    transitions.loc[0, "next_date"] = pd.NaT
+    pending = build_pending_features(features, transitions)
+    assert pending.entry_nct_id.tolist() == [features.nct_id.iat[0]]

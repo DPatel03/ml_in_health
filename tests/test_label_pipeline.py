@@ -328,3 +328,60 @@ def test_program_attributes_come_from_entry_date_trials_only():
 ])
 def test_area_for(terms, area):
     assert areas.area_for(terms) == area
+
+
+def test_snapshot_excludes_future_and_never_started_trials():
+    from label_pipeline.aact import started_trials
+
+    studies = pd.DataFrame({
+        "start_date": ["2026-09-01", "2026-10-09", "2025-01-01", "2025-01-01"],
+        "study_first_submitted_date": ["2026-10-08"] * 4,
+        "overall_status": ["RECRUITING", "RECRUITING", "WITHDRAWN", "NOT_YET_RECRUITING"],
+    })
+    observed, snapshot = started_trials(studies)
+    assert snapshot == D("2026-10-08")
+    assert observed.index.tolist() == [0]
+
+
+def test_fda_only_brand_inherits_unique_ingredient_id_and_earliest_approval():
+    fda = pd.DataFrame({
+        "key": ["drugone", "oldbrand"], "fda_id": ["FDA:drugone"] * 2,
+        "ingredient": ["DrugOne"] * 2, "first_approval": [D("2010-01-01"), D("2006-01-01")],
+    })
+    resolver = drugs.build_resolver({"drugone": "CHEMBL1"}, {"CHEMBL1": "drugone"}, fda)
+    assert resolver.resolve("oldbrand", [])[0] == "CHEMBL1"
+    assert drugs.approval_dates(resolver, fda).to_dict() == {"CHEMBL1": D("2006-01-01")}
+
+
+def test_specific_listed_condition_precedes_broad_ancestor():
+    assert areas.area_for({"Myasthenia Gravis"}, {"Neoplasms", "Autoimmune Diseases"}) == "Autoimmune"
+
+
+def test_area_collapse_preserves_tied_us_site_and_missing_entry_purpose():
+    rows = pd.DataFrame({
+        "drug_id": ["C1"] * 3, "area": ["Oncology"] * 3, "mesh_term": ["a", "b", "c"],
+        "entry_date": pd.to_datetime(["2010-01-01", "2010-01-01", "2012-01-01"]),
+        "entry_nct_id": ["T1", "T2", "T3"], "entry_primary_purpose": [None, "TREATMENT", "DIAGNOSTIC"],
+        "entry_has_us_site": [False, True, False], "next_mesh": pd.NaT,
+    })
+    row = labels._collapse_phase2_to_area(rows).iloc[0]
+    assert row.entry_nct_id == "T1" and row.entry_has_us_site
+    assert pd.isna(row.entry_primary_purpose)
+
+
+def test_approval_deadline_is_inclusive_and_uses_calendar_years():
+    entry = pd.Series([D("2012-02-29")] * 3)
+    nxt = pd.Series([D("2019-02-28"), D("2019-03-01"), pd.NaT])
+    assert labels.classify(entry, nxt, pd.Series([7] * 3), SNAPSHOT).tolist() == [
+        "advanced", "not_advanced", "not_advanced"]
+
+
+def test_no_qualifying_programs_returns_empty_label_table():
+    tables = _tables()
+    # This Phase 2 trial has no listed condition and cannot define a disease-area program.
+    trial_drugs = pd.DataFrame({"nct_id": ["T2"], "drug_id": ["CHEMBL_A"], "drug_name": ["a"]})
+    from dataclasses import replace
+    tables = replace(tables, conditions=tables.conditions.iloc[:0])
+    transitions, _ = labels.build_transitions(trial_drugs, tables, pd.Series(dtype="datetime64[ns]"), 2005)
+    labeled = labels.apply_window(transitions, labels.LabelConfig(snapshot=SNAPSHOT))
+    assert labeled.empty and "outcome" in labeled

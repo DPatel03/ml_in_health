@@ -2,91 +2,54 @@
 
 Investors value biotech drugs using fixed success rates from one industry table (the BIO 2021 report). This project predicts each drug's own chance of passing **Phase 1 → Phase 2 → Phase 3 → FDA approval**, and tests whether that beats the table.
 
-## Status
+## What the October 8, 2026 snapshot shows
 
-- **Done:** v1 label built from raw ClinicalTrials.gov data and checked against BIO 2021. Logistic-regression baselines for all three steps. None beats our own training-years area rates. Phase 2 → 3 is ahead of BIO's phase × area table only marginally (Brier 0.185 vs 0.190, CI touches zero); Phase 1 → 2 is worse than every benchmark.
-- **Next:** match approvals to their disease, de-duplicate disease rows, drug-level features, LightGBM, Phase 1 design features that mean the same thing over time (arm counts don't).
+Each model predicts a specific recorded event. A drug can reach Phase 2 or 3 and still never reach approval. The observed rates below use eligible programs with a complete follow-up window. The BIO rates come from a separate industry dataset.
 
-## Label v1 vs BIO 2021
+| Step | What counts as success | Labeled programs | Observed rate | BIO 2021 |
+|---|---|---:|---:|---:|
+| Phase 1 → 2 | A later Phase 2 or higher trial for the same drug starts within 5 years | 1,248 | 51.3% | 52.0% |
+| Phase 2 → 3 | A qualifying Phase 3 trial for the drug and disease area starts within 5 years | 3,087 | 22.4% | 28.9% |
+| Phase 3 → FDA approval | First recorded Drugs@FDA approval for the drug within 7 years | 830 | 41.0% | 52.4% |
 
-| Step | Our label | BIO 2021 | Labeled examples |
-|---|---|---|---|
-| Phase 1 → 2 | 51.8% | 52.0% | 1,249 |
-| Phase 2 → 3 | 23.0% | 28.9% | 3,087 |
-| Phase 3 → approval | 41.1% | 52.4% | 834 |
+**Phase 1 → 2.** The overall rate is close to BIO's. Predicting which individual drugs advance is harder. The logistic regression performed worse than BIO's disease-area rates on later trials.
 
-Phase 2 → 3 is one row per drug × BIO disease area (not per MeSH term), and no longer counts indication-blind FDA approvals as success — that cut the old ~8k-row MeSH explosion and removed ~26% fake successes. Phase 3 → approval is close to BIO for cancer (41.1% vs 43.9%) but low overall because vaccines/blood products aren't in Drugs@FDA. Full rules: `LABEL_RULES.md`.
+**Phase 2 → 3.** Each drug contributes at most one program per BIO disease area. Direct condition names take priority over broad MeSH ancestors. The generic “Others” category requires a matching or related condition. FDA approval alone cannot establish that a trial advanced for the same disease. With a seven-year window the observed rate is 28.6%.
 
-## Baseline models (all three steps)
+**Phase 3 → approval.** FDA brand and ingredient names share a drug ID when the mapping is unambiguous. This endpoint measures approval of the drug for any indication. In oncology, the recorded rate is 41.6% versus BIO's 43.9%. Approval coverage for biologics and the absence of indication-level matching limit the comparison.
 
-`build_features.py` pulls trial-design features from AACT (masking, allocation, enrollment, sponsor,
-site counts) and `build_model.py` joins them onto the label table via `entry_nct_id`, then trains one
-logistic regression per step. Results are in `output/model/baseline_results.csv` (Brier, skill and CI for
-every step × benchmark), with a calibration plot per step.
+Full eligibility and matching rules are in [LABEL_RULES.md](LABEL_RULES.md).
 
-What goes in:
-- **Left out:** enrollment, site/country counts and "has a US site". AACT stores their final values, not
-  what was known when the phase started. (`build_features.py` still keeps enrollment where
-  `enrollment_type` is `ESTIMATED`, but that covers only ~5% of training rows and those trials skew toward
-  ones that stalled, so using it made the model badly overconfident.)
-- **Sponsor track record:** the sponsor's advance rate on its programs whose window had closed before this
-  one entered, pulled toward the market-wide rate by 5 pseudo-programs, plus a flag for sponsors with no
-  closed programs yet. A success only counts once its window closes, same as a failure: counting it as soon
-  as it happens is still time-safe, but failures surface 5 years later, so the rate was inflated by however
-  much was in flight (before 2010 every sponsor with history scored 100%). Sponsor names are normalized
-  (`Novartis Pharmaceuticals` = `Novartis`, `Genentech, Inc.` = `Genentech`). Ownership notes like "a wholly
-  owned subsidiary of Pfizer" are cut, not mapped to the parent, because they describe today's owner.
-- **Entry trial's phase:** Phase 1/2 trials count as reaching Phase 2 but advance less often, and they're
-  24% of training programs vs 47% of test programs. Phase 2/3 vs Phase 3 plays the same role for approval.
+## Model evaluation
 
-Train is entries up to 2015, test is entries from 2016 on (2016–2019 for approval, whose 7-year window
-closes later), with every program of a drug on one side. An older drug's 2016+ programs are dropped (939
-Phase 2 → 3 rows) so no drug has programs on both sides. Training labels can still resolve after 2015, since
-a 2015 entry's window runs to 2020; `--train-end 2010` trains only on outcomes known by 2015.
+The models use trial design, disease area and the sponsor's history available at entry. Testing begins in 2016. Every training program must have completed its full observation window before January 1, 2016. That makes 2010 the last eligible training entry year for the five-year steps and 2008 for approval. Within each model, a drug appears on only one side of the split. Eligibility uses the available registry snapshot, so these are retrospective evaluations.
 
-Benchmarks: BIO's **phase × disease-area table** (what analysts plug into valuations), BIO's flat
-all-indications rate, and our own area rates from the training years. Ours is the fairest test of whether
-the features add anything, because it's scored on the same label definition the model learns. BIO's numbers
-come from a different database, and on Phase 3 → approval our label misses CBER approvals (vaccines, blood
-products), which makes BIO look worse than it is.
+| Step | Model | Train / test programs | Model Brier | BIO by area Brier | Relative change in error |
+|---|---|---:|---:|---:|---|
+| Phase 1 → 2 | Logistic regression | 426 / 440 | 0.2705 | 0.2456 | 10.1% higher |
+| Phase 2 → 3 | Recalibrated LightGBM | 1,011 / 1,100 | 0.1748 | 0.1892 | 7.6% lower |
+| Phase 3 → approval | Logistic regression | 207 / 261 | 0.2561 | 0.2552 | 0.4% higher |
 
-Model minus benchmark Brier (negative = model better), 95% CI resampling whole drugs (2,000 draws):
+Lower Brier scores mean that the predicted probabilities were closer to the observed outcomes. The Phase 2 model's error difference against BIO by area was −0.0144 (95% interval −0.0207 to −0.0083, resampling whole drugs). Its advantage over disease-area rates calculated from our own training data was smaller and uncertain. For Phase 3 the interval also spans zero. See [all benchmark results](output/model/baseline_results.csv).
 
-| Step | Train / test | Model Brier | vs BIO by area | vs BIO flat | vs our area rates |
-|---|---|---|---|---|---|
-| Phase 1 → 2 | 900 / 497 | 0.2644 | +0.0204 (+0.0049 to +0.0361) | +0.0136 (−0.0012 to +0.0284) | +0.0218 (+0.0081 to +0.0350) |
-| Phase 2 → 3 | 4,403 / 2,652 | 0.1847 | −0.0051 (−0.0105 to +0.0004) | +0.0002 (−0.0042 to +0.0045) | +0.0024 (−0.0019 to +0.0066) |
-| Phase 3 → approval | 582 / 264 | 0.2524 | −0.0041 (−0.0267 to +0.0182) | −0.0021 (−0.0242 to +0.0204) | +0.0077 (−0.0141 to +0.0302) |
+Sponsor history includes all three transitions. Both successes and failures enter the history after the full window closes. The Phase 2 calibrator uses out-of-fold training predictions with each drug kept in one fold. Final enrollment and site counts are excluded as model inputs. The primary evaluation also excludes the modern Open Targets genetic snapshot because its scores were unavailable at historical trial entry. For a separate retrospective comparison:
 
-**Phase 2 → 3** is ahead of BIO's area table by 0.005 (skill +2.7%), and the CI just touches zero. It ties
-BIO's flat rate and our own area rates. The gain is all non-oncology (−0.0110, −0.0184 to −0.0033);
-oncology is a tie. BIO's area table does worse than its own flat rate on 2016+ programs. The gap stays
-negative but includes zero with the embargo (−0.0041), in earlier test periods (2011–12: −0.0014,
-2013–15: −0.0047) and with each drug + trial counted once (−0.0043). Calibration is close through the
-middle and overconfident in the top fifth (predicts ~39%, actual ~26%); the base rate also fell from 26.1%
-in training to 23.9% in test.
+```bash
+python3 build_model.py --transition phase2_to_phase3 --genetic-evidence external/opentargets/genetic_evidence.csv --out-dir /tmp/phase2-genetic
+```
 
-**Phase 1 → 2** loses to every benchmark and is overconfident (top fifth predicts 82%, 60% advanced). The
-main cause is a change in Phase 1 design: trials with more than 5 arms went from 12% of training programs
-to 26% of test programs, and they advanced 71% of the time in training but 53% in test (dose escalation
-plus expansion cohorts now register many arms). The base rate also fell, 54% → 49%.
+## Watchlist and illustrative valuation
 
-**Phase 3 → approval** has only 264 test drugs, so CIs are about ±0.02 and nothing is distinguishable.
+Of 639 eligible Phase 2 programs with an open window, 85 had a recorded Phase 3 start by the snapshot date. The watchlist scores the remaining **554** using a model refitted on all 3,087 mature programs. The probabilities are estimates from phase entry. They do not account for how long an individual program has already waited. The `reliable` column marks an area whose observed success rate is within five percentage points of BIO. It cannot validate an individual forecast or establish market mispricing.
 
-Earlier versions looked better, and each difference was a leak or a bias. 0.169 came from a sponsor track
-record that used outcomes not yet known at entry. The −0.0070 vs BIO's area table (CI excluding zero) ran on
-a label set that let later trials decide which programs counted (LABEL_RULES.md §7) and counted sponsor
-successes as soon as they happened; with that track-record definition the gap would be −0.0079 (−0.0142 to
-−0.0016). We use the closed-window version because it means the same thing in every year.
+The valuation example holds the BIO Phase 3 → approval rate and a hypothetical $1 billion value at approval fixed. Changing just the Phase 2 probability changes the illustrative value as follows.
 
-## How the label works
+| Program | BIO Phase 2 → 3 | Model Phase 2 → 3 | BIO value | Model value |
+|---|---:|---:|---:|---:|
+| Givastomig, oncology | 24.6% | 26.8% | $108.0M | $117.6M |
+| Lutikizumab, autoimmune | 31.4% | 25.1% | $192.9M | $154.2M |
 
-Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
-
-1. Company-sponsored Phase 1–3 trials from ClinicalTrials.gov (AACT).
-2. The drug in each trial's experimental arm, matched to one ID with ChEMBL (MK-3475 = pembrolizumab).
-3. A program is one drug + one disease. Success means reaching the next phase within 5 years, or FDA approval within 7 years of Phase 3.
-4. Programs whose time hasn't run out are "pending" and get no label.
+The program-level records are in the [watchlist](output/model/watchlist_phase2_to_phase3.csv) and [valuation examples](output/model/rnpv_illustration.csv).
 
 ## Repo layout
 
@@ -97,10 +60,13 @@ Full rules: **[LABEL_RULES.md](LABEL_RULES.md)**. In short:
 | `LABEL_RULES.md` | Label rules and open decisions |
 | `output/labels/` | Label table (`transitions.csv`), drug IDs per trial (`trial_drugs.csv`), comparison tables and `summary.json` |
 | `build_features.py` | Trial-design features from AACT |
-| `build_model.py` | Joins features to the labels, trains one baseline per step |
-| `output/model/` | Feature table, `baseline_results.csv` and a calibration plot per step |
+| `build_model.py` | Trains and evaluates one model per transition |
+| `build_watchlist.py` | Scores pending programs for the mispricing watchlist |
+| `build_rnpv.py` | Illustrative rNPV swap on two real pending programs |
+| `build_genetic_evidence.py` | Open Targets genetic-evidence feature, cached in `external/opentargets/` |
+| `output/model/` | Feature table, test results, calibration plots and watchlist |
 | `external/bio/bio2021_phase_transitions.csv` | BIO 2021 success rates |
-| `tests/` | Tests for the label and model code |
+| `tests/` | Regression tests for labels and models |
 
 ## Setup
 
@@ -123,14 +89,22 @@ pip install -r requirements.txt
 ```bash
 python3 build_labels.py     # builds output/labels/ (~30 s)
 python3 build_features.py   # builds output/model/trial_design_features.csv
-python3 build_model.py      # trains all three baselines, writes output/model/baseline_results.csv + calibration plots
+python3 build_model.py      # trains all three models and writes results and calibration plots
+python3 build_watchlist.py  # scores pending programs, writes output/model/watchlist_phase2_to_phase3.csv
+python3 build_rnpv.py       # rNPV illustration, writes output/model/rnpv_illustration.csv
 python3 -m pytest           # tests (no data needed)
 ```
 
-Robustness runs (`--train-end`, `--test-start`, `--test-end`) should get their own `--out-dir` so they don't
-overwrite the committed results; see the docstring in `build_model.py`.
-
 The label table is `output/labels/transitions.csv`. Use rows where `in_v1_label_set` is True and `label` is 0 or 1. To add trial features, join on `entry_nct_id`: the trial that started that program's phase (for Phase 2 → 3, the first Phase 2 trial in that disease).
+
+The standalone Phase 1 workflow already merged into `main` remains available:
+
+```bash
+python3 build_phase1_labels.py
+python3 build_phase1_model.py
+```
+
+It uses `output/labels/phase1_to_phase2.csv` and the frozen sponsor-history snapshot. The shared workflow above regenerates all three transitions.
 
 ## Open decisions
 

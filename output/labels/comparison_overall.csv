@@ -1,10 +1,10 @@
 transition,n,our_rate,bio_rate,bio_n,gap_pct_points,subset
-phase1_to_phase2,1249,0.518,0.52,4414,-0.2,"v1 label set (identified drug, US site)"
-phase2_to_phase3,3087,0.23,0.289,4933,-5.9,"v1 label set (identified drug, US site)"
-phase3_to_approval,834,0.411,0.524,1928,-11.2,"v1 label set (identified drug, US site)"
-phase1_to_phase2,2417,0.548,0.52,4414,2.8,"identified drugs, any country"
-phase2_to_phase3,4761,0.22,0.289,4933,-6.9,"identified drugs, any country"
-phase3_to_approval,1231,0.348,0.524,1928,-17.5,"identified drugs, any country"
-phase1_to_phase2,9468,0.229,0.52,4414,-29.1,all industry drugs
-phase2_to_phase3,10505,0.125,0.289,4933,-16.4,all industry drugs
-phase3_to_approval,3902,0.11,0.524,1928,-41.4,all industry drugs
+phase1_to_phase2,1248,0.513,0.52,4414,-0.7,"v1 label set (identified drug, US site)"
+phase2_to_phase3,3087,0.224,0.289,4933,-6.5,"v1 label set (identified drug, US site)"
+phase3_to_approval,830,0.41,0.524,1928,-11.4,"v1 label set (identified drug, US site)"
+phase1_to_phase2,2402,0.543,0.52,4414,2.3,"identified drugs, any country"
+phase2_to_phase3,4669,0.218,0.289,4933,-7.1,"identified drugs, any country"
+phase3_to_approval,1217,0.348,0.524,1928,-17.6,"identified drugs, any country"
+phase1_to_phase2,9347,0.226,0.52,4414,-29.4,all industry drugs
+phase2_to_phase3,10276,0.124,0.289,4933,-16.5,all industry drugs
+phase3_to_approval,3809,0.111,0.524,1928,-41.3,all industry drugs

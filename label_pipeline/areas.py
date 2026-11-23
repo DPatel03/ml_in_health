@@ -11,7 +11,7 @@ AREA_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
                   "glioma", "glioblastoma", "tumor", "myelodysplastic")),
     ("Infectious disease", ("infection", "virus diseases", "bacterial infections", "mycoses", "parasitic diseases",
                             "hiv", "hepatitis", "influenza", "tuberculosis", "malaria", "sepsis", "covid")),
-    ("Autoimmune", ("autoimmune diseases", "arthritis, rheumatoid", "psoriasis", "lupus", "inflammatory bowel",
+    ("Autoimmune", ("autoimmune", "myasthenia gravis", "arthritis, rheumatoid", "psoriasis", "lupus", "inflammatory bowel",
                     "crohn disease", "colitis, ulcerative", "multiple sclerosis", "spondylitis", "sjogren")),
     ("Allergy", ("hypersensitivity", "rhinitis, allergic", "urticaria", "anaphylaxis")),
     ("Hematology", ("hematologic diseases", "anemia", "hemophilia", "thrombocytopenia", "blood coagulation disorders",
@@ -34,11 +34,24 @@ AREA_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
-def area_for(terms: Iterable[str]) -> str:
-    text = " | ".join(t.lower() for t in terms)
-    if not text:
-        return "Unknown"
-    for area, markers in AREA_RULES:
-        if any(m in text for m in markers):
-            return area
-    return "Others"
+def area_for(terms: Iterable[str], ancestors: Iterable[str] = ()) -> str:
+    """Prefer a specific listed condition over broad, sometimes cross-specialty ancestors."""
+    listed = " | ".join(t.lower() for t in terms)
+    broader = " | ".join(t.lower() for t in ancestors)
+    for text in (listed, broader):
+        for area, markers in AREA_RULES:
+            if any(m in text for m in markers):
+                return area
+    return "Others" if listed or broader else "Unknown"
+
+
+def phase1_area(terms: set[str], ancestors: set[str]) -> str:
+    """Prefer the listed condition over broad MeSH ancestors on a Phase 1 entry trial."""
+    for candidates in (terms, ancestors):
+        description = " | ".join(t.lower() for t in candidates)
+        for area, markers in AREA_RULES:
+            if area == "Autoimmune":
+                markers = ("autoimmune", "myasthenia gravis", *markers)
+            if any(marker in description for marker in markers):
+                return area
+    return "Others" if terms or ancestors else "Unknown"

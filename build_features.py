@@ -15,8 +15,9 @@ from pathlib import Path
 
 import pandas as pd
 
+from label_pipeline.aact import PHASE_LEVEL, started_trials
+
 HERE = Path(__file__).resolve().parent
-PHASE_LEVEL = {"PHASE1": 1, "PHASE1/PHASE2": 2, "PHASE2": 2, "PHASE2/PHASE3": 3, "PHASE3": 3}
 _READ = dict(sep="|", dtype=str, quoting=csv.QUOTE_NONE, on_bad_lines="skip")
 
 
@@ -29,8 +30,9 @@ def read_table(aact_path: Path, name: str, usecols: list[str]) -> pd.DataFrame:
 
 def build(aact_path: Path) -> pd.DataFrame:
     studies = read_table(aact_path, "studies", ["nct_id", "study_type", "phase", "start_date", "enrollment",
-                                                 "enrollment_type", "number_of_arms"])
-    studies["start"] = pd.to_datetime(studies.start_date, errors="coerce")
+                                                 "enrollment_type", "number_of_arms", "overall_status",
+                                                 "study_first_submitted_date"])
+    studies, _ = started_trials(studies)
     sponsors = read_table(aact_path, "sponsors", ["nct_id", "agency_class", "lead_or_collaborator", "name"])
     lead = sponsors[sponsors.lead_or_collaborator == "lead"]
     industry_ids = set(lead[lead.agency_class == "INDUSTRY"].nct_id)

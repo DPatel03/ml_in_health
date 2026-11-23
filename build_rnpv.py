@@ -3,8 +3,7 @@
 rNPV = P(Phase 2 -> 3) x P(Phase 3 -> approval) x V, where V is a hypothetical discounted value if
 approved -- the same number in both scenarios, so the comparison isolates exactly what swapping the
 Phase 2 -> 3 estimate does. P(Phase 3 -> approval) also stays BIO's own disease-area rate in both
-scenarios: we haven't modeled that transition yet (see README, What's Next), so only the one step
-we've actually built changes.
+scenarios to isolate the effect of changing the Phase 2 estimate.
 
 V is not a real valuation of these companies -- we have no revenue or pipeline data to ground one --
 it is a single illustrative number so the output reads as a dollar swing, not just a ratio.
@@ -22,14 +21,14 @@ HERE = Path(__file__).resolve().parent
 ILLUSTRATIVE_VALUE_IF_APPROVED = 1_000  # $M, hypothetical, same for every program and both scenarios
 
 # real pending programs from our own reliable watchlist -- one model>BIO, one model<BIO
-EXAMPLES = ["lutikizumab", "povetacicept"]
+EXAMPLES = ["givastomig", "lutikizumab"]
 
 
 def phase3_to_approval_rates(bio_path: Path) -> pd.Series:
     bio = pd.read_csv(bio_path)
     p3 = bio[bio.transition == "phase3_to_nda"].set_index("disease_area").success_rate
     nda = bio[bio.transition == "nda_to_approval"].set_index("disease_area").success_rate
-    return (p3 * nda).round(3)
+    return p3 * nda
 
 
 def main() -> None:
@@ -52,7 +51,7 @@ def main() -> None:
         rows.append({
             "drug": r.drug_name, "sponsor": r.lead_sponsor_name, "disease_area": r.disease_area,
             "BIO P(Phase2->3)": r.bio_area_rate, "Our P(Phase2->3)": r.our_probability,
-            "P(Phase3->approval), BIO (held constant)": p3,
+            "P(Phase3->approval), BIO (held constant)": round(p3, 6),
             "BIO cumulative PoS": round(bio_cumulative, 3), "Our cumulative PoS": round(our_cumulative, 3),
             "BIO rNPV ($M)": round(bio_cumulative * ILLUSTRATIVE_VALUE_IF_APPROVED, 1),
             "Our rNPV ($M)": round(our_cumulative * ILLUSTRATIVE_VALUE_IF_APPROVED, 1),

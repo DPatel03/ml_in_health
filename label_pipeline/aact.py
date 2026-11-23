@@ -37,9 +37,9 @@ def started_trials(studies: pd.DataFrame) -> tuple[pd.DataFrame, pd.Timestamp]:
     return studies.loc[observed].assign(start=start[observed]), snapshot
 
 
-def load(aact_dir: Path, *, observed_starts_only: bool = False) -> AactTables:
-    cols = ["nct_id", "study_type", "phase", "start_date", "study_first_submitted_date"]
-    studies = _read(aact_dir, "studies", cols + (["overall_status"] if observed_starts_only else []))
+def load(aact_dir: Path, observed_starts_only: bool = True) -> AactTables:
+    studies = _read(aact_dir, "studies", ["nct_id", "study_type", "phase", "start_date",
+                                          "study_first_submitted_date", "overall_status"])
     if observed_starts_only:
         studies, snapshot = started_trials(studies)
     else:

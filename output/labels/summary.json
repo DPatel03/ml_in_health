@@ -3,126 +3,126 @@
   "window_years": 5,
   "approval_window_years": 7,
   "v1_labeled_rows": {
-    "phase1_to_phase2": 1249,
+    "phase1_to_phase2": 1248,
     "phase2_to_phase3": 3087,
-    "phase3_to_approval": 834
+    "phase3_to_approval": 830
   },
-  "industry_trials": 83717,
-  "trial_drug_rows": 100669,
+  "industry_trials": 79534,
+  "trial_drug_rows": 95455,
   "drug_matching": {
-    "skipped_combination": 12990,
-    "skipped_not_a_drug": 7526,
-    "skipped_ambiguous_or_empty": 361,
-    "matched_chembl": 58239,
-    "matched_name_only": 19209,
-    "matched_research_code": 18178,
-    "matched_chembl_alt_name": 3196,
-    "matched_drugs_at_fda": 1847
+    "skipped_combination": 12384,
+    "skipped_not_a_drug": 7220,
+    "skipped_ambiguous_or_empty": 347,
+    "matched_chembl": 55992,
+    "matched_name_only": 18077,
+    "matched_research_code": 16546,
+    "matched_chembl_alt_name": 3093,
+    "matched_drugs_at_fda": 1747
   },
-  "drugs_in_scope": 30639,
-  "drugs_excluded_already_approved": 807,
-  "phase2_mesh_programs_before_collapse": 34337,
-  "phase2_area_programs_after_collapse": 16359,
+  "drugs_in_scope": 29081,
+  "drugs_excluded_already_approved": 750,
+  "phase2_mesh_programs_before_collapse": 32408,
+  "phase2_area_programs_after_collapse": 15416,
   "outcomes": {
     "phase1_to_phase2": {
-      "advanced": 2166,
-      "already_past": 1615,
-      "not_advanced": 7302,
-      "pending": 5218
+      "advanced": 2110,
+      "already_past": 1537,
+      "not_advanced": 7237,
+      "pending": 4678
     },
     "phase2_to_phase3": {
-      "advanced": 1315,
-      "already_past": 818,
-      "not_advanced": 9190,
-      "pending": 5036
+      "advanced": 1276,
+      "already_past": 765,
+      "not_advanced": 9000,
+      "pending": 4375
     },
     "phase3_to_approval": {
-      "advanced": 429,
-      "already_past": 48,
-      "not_advanced": 3473,
-      "pending": 2814
+      "advanced": 423,
+      "already_past": 47,
+      "not_advanced": 3386,
+      "pending": 2474
     }
   },
   "overall": [
     {
       "transition": "phase1_to_phase2",
-      "n": 1249,
-      "our_rate": 0.518,
+      "n": 1248,
+      "our_rate": 0.513,
       "bio_rate": 0.52,
       "bio_n": 4414,
-      "gap_pct_points": -0.2,
+      "gap_pct_points": -0.7,
       "subset": "v1 label set (identified drug, US site)"
     },
     {
       "transition": "phase2_to_phase3",
       "n": 3087,
-      "our_rate": 0.23,
+      "our_rate": 0.224,
       "bio_rate": 0.289,
       "bio_n": 4933,
-      "gap_pct_points": -5.9,
+      "gap_pct_points": -6.5,
       "subset": "v1 label set (identified drug, US site)"
     },
     {
       "transition": "phase3_to_approval",
-      "n": 834,
-      "our_rate": 0.411,
+      "n": 830,
+      "our_rate": 0.41,
       "bio_rate": 0.524,
       "bio_n": 1928,
-      "gap_pct_points": -11.2,
+      "gap_pct_points": -11.4,
       "subset": "v1 label set (identified drug, US site)"
     },
     {
       "transition": "phase1_to_phase2",
-      "n": 2417,
-      "our_rate": 0.548,
+      "n": 2402,
+      "our_rate": 0.543,
       "bio_rate": 0.52,
       "bio_n": 4414,
-      "gap_pct_points": 2.8,
+      "gap_pct_points": 2.3,
       "subset": "identified drugs, any country"
     },
     {
       "transition": "phase2_to_phase3",
-      "n": 4761,
-      "our_rate": 0.22,
+      "n": 4669,
+      "our_rate": 0.218,
       "bio_rate": 0.289,
       "bio_n": 4933,
-      "gap_pct_points": -6.9,
+      "gap_pct_points": -7.1,
       "subset": "identified drugs, any country"
     },
     {
       "transition": "phase3_to_approval",
-      "n": 1231,
+      "n": 1217,
       "our_rate": 0.348,
       "bio_rate": 0.524,
       "bio_n": 1928,
-      "gap_pct_points": -17.5,
+      "gap_pct_points": -17.6,
       "subset": "identified drugs, any country"
     },
     {
       "transition": "phase1_to_phase2",
-      "n": 9468,
-      "our_rate": 0.229,
+      "n": 9347,
+      "our_rate": 0.226,
       "bio_rate": 0.52,
       "bio_n": 4414,
-      "gap_pct_points": -29.1,
+      "gap_pct_points": -29.4,
       "subset": "all industry drugs"
     },
     {
       "transition": "phase2_to_phase3",
-      "n": 10505,
-      "our_rate": 0.125,
+      "n": 10276,
+      "our_rate": 0.124,
       "bio_rate": 0.289,
       "bio_n": 4933,
-      "gap_pct_points": -16.4,
+      "gap_pct_points": -16.5,
       "subset": "all industry drugs"
     },
     {
       "transition": "phase3_to_approval",
-      "n": 3902,
-      "our_rate": 0.11,
+      "n": 3809,
+      "our_rate": 0.111,
       "bio_rate": 0.524,
       "bio_n": 1928,
-      "gap_pct_points": -41.4,
+      "gap_pct_points": -41.3,
       "subset": "all industry drugs"
     }
   ]

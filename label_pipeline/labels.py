@@ -40,8 +40,16 @@ class LabelConfig:
         return self.window_years + (self.approval_extra_years if transition == TRANSITIONS[2] else 0)
 
 
+def window_end(entry: pd.Series, years: pd.Series) -> pd.Series:
+    deadline = entry.copy()
+    for duration in years.unique():
+        mask = years == duration
+        deadline.loc[mask] = entry[mask] + pd.DateOffset(years=int(duration))
+    return deadline
+
+
 def classify(entry: pd.Series, nxt: pd.Series, years: pd.Series, snapshot: pd.Timestamp) -> pd.Series:
-    deadline = pd.Series([e + pd.DateOffset(years=int(y)) for e, y in zip(entry, years)], index=entry.index)
+    deadline = window_end(entry, years)
     # A program whose window is still open gets no label even if it already advanced; labelling only the
     # early successes would bias recent cohorts upward. A next step on the entry date itself is already past:
     # the outcome is known the moment the program enters, so there's nothing to predict.
@@ -58,8 +66,10 @@ def apply_window(transitions: pd.DataFrame, cfg: LabelConfig) -> pd.DataFrame:
     df["window_years"] = df.transition.map(cfg.years_for)
     df["outcome"] = classify(df.entry_date, df.next_date, df.window_years, cfg.snapshot)
     df["label"] = df.outcome.map({Outcome.ADVANCED.value: 1.0, Outcome.NOT_ADVANCED.value: 0.0})
-    df["cohort"] = pd.cut(df.entry_date.dt.year, [cfg.first_entry_year - 1, 2010, 2015, 2100],
-                          labels=[f"{cfg.first_entry_year}-2010", "2011-2015", "2016+"])
+    year = df.entry_date.dt.year
+    breaks = [cfg.first_entry_year - 1, *(end for end in (2010, 2015) if end >= cfg.first_entry_year), np.inf]
+    names = [f"{int(lo) + 1}-{int(hi)}" for lo, hi in zip(breaks, breaks[1:]) if np.isfinite(hi)]
+    df["cohort"] = pd.cut(year, breaks, labels=[*names, f"{int(breaks[-2]) + 1}+"])
     return df
 
 
@@ -82,7 +92,7 @@ def _entry_trial(trials: pd.DataFrame, keys: list[str]) -> pd.Series:
 def _at_entry(trials: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
     """Trials registered on each program's entry date. Program attributes (US site, disease area) come only from
     these, so later trials can't decide which programs make the label set or what they look like at entry."""
-    return trials[trials.start == trials.groupby(keys).start.transform("min")]
+    return trials[trials.start == trials.groupby(keys).start.transform("min")].sort_values("nct_id")
 
 
 def _mode_area(areas: pd.Series) -> str:
@@ -108,9 +118,11 @@ def _collapse_phase2_to_area(mesh_rows: pd.DataFrame) -> pd.DataFrame:
     if mesh_rows.empty:
         return mesh_rows.iloc[0:0].copy()
     rows = mesh_rows.sort_values(["drug_id", "area", "entry_date", "entry_nct_id", "mesh_term"])
-    entry = rows.groupby(["drug_id", "area"], as_index=False).first()
-    nxt = rows.groupby(["drug_id", "area"], as_index=False).next_mesh.min()
-    return entry.drop(columns=["next_mesh"], errors="ignore").merge(nxt, on=["drug_id", "area"])
+    keys = ["drug_id", "area"]
+    same_day = rows[rows.entry_date == rows.groupby(keys).entry_date.transform("min")].copy()
+    same_day["entry_has_us_site"] = same_day.groupby(keys).entry_has_us_site.transform("any")
+    entry = same_day.drop_duplicates(keys)
+    return entry.drop(columns="next_mesh").merge(rows.groupby(keys).next_mesh.min(), on=keys)
 
 
 def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd.Series,
@@ -118,8 +130,9 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
     """All programs entering Phase 1, 2 or 3, with entry_date and next_date (earliest qualifying next step)."""
     t = trial_drugs[["nct_id", "drug_id", "drug_name"]].merge(aact.trials, on="nct_id")
     listed, anc, ancestors_of = _trial_terms(aact)
-    t["area"] = [area_for(listed.get(n, set()) | anc.get(n, set())) for n in t.nct_id]
+    t["area"] = [area_for(listed.get(n, set()), anc.get(n, set())) for n in t.nct_id]
 
+    approvals = approvals[approvals <= aact.snapshot]
     first_trial = t.groupby("drug_id").start.min()
     approval = approvals.reindex(first_trial.index)
     lifecycle = set(first_trial.index[approval.notna() & (approval <= first_trial)])
@@ -133,7 +146,7 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
     p1 = t[t.phase == "PHASE1"]
     e1 = _at_entry(p1, ["drug_id"]).groupby("drug_id").agg(
         entry_date=("start", "min"), area=("area", _mode_area),
-        entry_has_us_site=("has_us_site", "any"), entry_primary_purpose=("primary_purpose", "first"),
+        entry_has_us_site=("has_us_site", "any"), entry_primary_purpose=("primary_purpose", lambda v: v.iloc[0]),
     )
     e1["entry_nct_id"] = _entry_trial(p1, ["drug_id"])
     reach2 = t[t.level >= 2].groupby("drug_id").start.min()
@@ -151,7 +164,7 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
         columns=["drug_id", "mesh_term", "nct_id", "start", "has_us_site", "primary_purpose"])
     e2 = (_at_entry(p2_terms, ["drug_id", "mesh_term"]).groupby(["drug_id", "mesh_term"])
           .agg(entry_date=("start", "min"), entry_has_us_site=("has_us_site", "any"),
-               entry_primary_purpose=("primary_purpose", "first")).reset_index())
+               entry_primary_purpose=("primary_purpose", lambda v: v.iloc[0])).reset_index())
     e2["entry_nct_id"] = (_entry_trial(p2_terms, ["drug_id", "mesh_term"])
                           .reindex(pd.MultiIndex.from_frame(e2[["drug_id", "mesh_term"]])).to_numpy())
     p3_by_drug: dict[str, list[tuple[pd.Timestamp, set[str], set[str]]]] = defaultdict(list)
@@ -165,28 +178,39 @@ def build_transitions(trial_drugs: pd.DataFrame, aact: AactTables, approvals: pd
         return min(starts) if starts else pd.NaT
 
     e2["next_mesh"] = [next_p3_mesh(d, m) for d, m in zip(e2.drug_id, e2.mesh_term)]
-    e2["area"] = [area_for({m} | ancestors_of.get(m, set())) for m in e2.mesh_term]
+    e2["area"] = [area_for({m}, ancestors_of.get(m, set())) for m in e2.mesh_term]
     n_mesh_programs = len(e2)
     e2 = _collapse_phase2_to_area(e2)
-    p3_by_area = p3.groupby(["drug_id", "area"]).start.min()
-    next_area = pd.Series([p3_by_area.get((d, a), pd.NaT) for d, a in zip(e2.drug_id, e2.area)], index=e2.index)
+    # A basket trial may explicitly study more than one area. A catch-all category
+    # alone is insufficient evidence that two indications are related.
+    p3_by_area = {}
+    for drug, nct, start, trial_area in zip(p3.drug_id, p3.nct_id, p3.start, p3.area):
+        areas = {area_for({term}, ancestors_of.get(term, set())) for term in listed.get(nct, ())}
+        for area in (areas | {trial_area}) - {"Unknown", "Others"}:
+            key = (drug, area)
+            if key not in p3_by_area or start < p3_by_area[key]:
+                p3_by_area[key] = start
+    next_area = pd.Series([p3_by_area.get((d, a), pd.NaT) for d, a in zip(e2.drug_id, e2.area)],
+                          index=e2.index, dtype="datetime64[ns]")
     e2["next_date"] = pd.concat([e2["next_mesh"], next_area], axis=1).min(axis=1)
     frames.append(e2.drop(columns="next_mesh").set_index("drug_id").assign(transition=TRANSITIONS[1]))
 
     # Phase 3 -> FDA approval, per drug: Drugs@FDA has no indication field.
     p3e = _at_entry(p3, ["drug_id"]).groupby("drug_id").agg(
         entry_date=("start", "min"), area=("area", _mode_area),
-        entry_has_us_site=("has_us_site", "any"), entry_primary_purpose=("primary_purpose", "first"),
+        entry_has_us_site=("has_us_site", "any"), entry_primary_purpose=("primary_purpose", lambda v: v.iloc[0]),
     )
     p3e["entry_nct_id"] = _entry_trial(p3, ["drug_id"])
     frames.append(p3e.assign(transition=TRANSITIONS[2], mesh_term="", next_date=approval.reindex(p3e.index)))
 
-    frames = [f for f in frames if len(f)]
-    out = pd.concat(frames).rename_axis("drug_id").reset_index()
+    populated = [f for f in frames if not f.empty]
+    out = pd.concat(populated or [frames[0].iloc[:0]]).rename_axis("drug_id").reset_index()
+    out["entry_date"] = pd.to_datetime(out.entry_date)
+    out["next_date"] = pd.to_datetime(out.next_date)
     out["drug_name"] = out.drug_id.map(names)
     # Drugs known only by a code or bare name can't be followed across trials or found in Drugs@FDA,
     # so their "failures" are mostly linking failures.
-    out["identified"] = out.drug_id.str.startswith(("CHEMBL", "FDA:"))
+    out["identified"] = out.drug_id.astype(str).str.startswith(("CHEMBL", "FDA:"))
     purpose_ok = out.entry_primary_purpose.map(_purpose_ok)
     out["in_v1_label_set"] = out.identified & out.entry_has_us_site & purpose_ok
     out = out[out.entry_date.dt.year >= first_entry_year]
